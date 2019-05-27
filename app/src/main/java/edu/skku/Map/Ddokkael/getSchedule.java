@@ -80,6 +80,7 @@ public class getSchedule extends AppCompatActivity {
                 arrayAdapter.clear();
                 arrayAdapter.addAll(data);
                 arrayAdapter.notifyDataSetChanged();
+                clearET();
             }
 
             @Override
@@ -101,6 +102,11 @@ public class getSchedule extends AppCompatActivity {
             finalM = "0"+Integer.toString(fM);
         } else { finalM = Integer.toString(fM);}
         return (startT+":"+startM+"~"+finalT+":"+finalM);
+    }
+
+    public void clearET(){
+        name = "";
+        nameEt.setText("");
     }
 }
 

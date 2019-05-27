@@ -42,22 +42,28 @@ public class addFriend extends AppCompatActivity {
                     Toast.makeText(addFriend.this, "Data is missing", Toast.LENGTH_SHORT).show();
                 } else{
                     if(mPostReference.equalTo(name1)!=null&&mPostReference.equalTo(name2)!=null){
-                        Map<String, Object> childUpdates = new HashMap<>();
-                        Map<String, Object> friend1 = new HashMap<>();
-                        friend1.put(name2, name2);
-                        Map<String, Object> friend2 = new HashMap<>();
-                        friend2.put(name1, name1);
-
-                        childUpdates.put("/Person_List/"+name1+"/Friend_List/", friend1);
-                        childUpdates.put("/Person_List/"+name2+"/Friend_List/", friend2);
-
-                        mPostReference.updateChildren(childUpdates);
-                        Toast.makeText(addFriend.this, name1+" "+name2, Toast.LENGTH_SHORT).show();
-                        clearET();
+                        postFirebaseDatabase(true);
                     }
                 }
             }
         });
+    }
+    public void postFirebaseDatabase(boolean add){
+        Map<String, Object> childUpdates = new HashMap<>();
+        Map<String, Object> postValues = null;
+        Map<String, Object> postValues2 = null;
+        if(add){
+            FirebaseName name = new FirebaseName(name1);
+            postValues = name.toMap();
+            FirebaseName name_ = new FirebaseName(name2);
+            postValues2 = name_.toMap();
+        }
+        childUpdates.put("/Person_List/"+name2+"/Friend_List/"+name1, postValues);
+        childUpdates.put("/Person_List/"+name1+"/Friend_List/"+name2, postValues2);
+        mPostReference.updateChildren(childUpdates);
+        Toast.makeText(addFriend.this, "add complete", Toast.LENGTH_SHORT).show();
+        clearET();
+
     }
     void clearET(){
         name1Et.setText("");
