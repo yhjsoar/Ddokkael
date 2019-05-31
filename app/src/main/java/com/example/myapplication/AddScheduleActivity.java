@@ -36,7 +36,7 @@ public class AddScheduleActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
-                intent.putExtra("data","hi");
+                intent.putExtra("button",1);
                 setResult(RESULT_OK, intent);
 
                 finish();
@@ -47,7 +47,7 @@ public class AddScheduleActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
-                intent.putExtra("data","hi");
+                intent.putExtra("button",0);
                 setResult(RESULT_OK, intent);
 
                 finish();

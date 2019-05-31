@@ -6,13 +6,17 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.CalendarView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class CustomAdapter extends PagerAdapter {
 
@@ -35,17 +39,36 @@ public class CustomAdapter extends PagerAdapter {
             view = inflater.inflate(R.layout.calendar, null);
             CalendarView calendar = (CalendarView)view.findViewById(R.id.calendarView);
             final TextView calendar_text = (TextView)view.findViewById(R.id.calendar_text);
+            final ListView calendar_list = (ListView)view.findViewById(R.id.calendar_list);
+            final ArrayList<String> schedule_list = new ArrayList<String>();
 
-            // Default setting
+            // 오늘의 일정 정보(Default 값)
+            schedule_list.add("9:00 A");
+            schedule_list.add("10:30 B");
+            schedule_list.add("11:00 모바일 앱 실습");
+            schedule_list.add("13:30 자퇴");
+            schedule_list.add("15:00 모바일 앱 실습");
+            schedule_list.add("16:30 자퇴");
+
+            final ArrayAdapter adapter = new ArrayAdapter(view.getContext(), android.R.layout.simple_list_item_1, schedule_list);
+            calendar_list.setAdapter(adapter);
             String today = new SimpleDateFormat("yyyy/M/dd").format(new Date());
             calendar_text.setText(today);
 
-            // Calendar
+            // 날자 선택
             calendar.setOnDateChangeListener(new CalendarView.OnDateChangeListener(){
                 @Override
                 public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
                     calendar_text.setText(year+"/"+(month+1)+"/"+dayOfMonth);
-                    // 해당 요일의 data를 읽어와서 listView에 넣기
+                    // 해당 날짜의 data를 읽어와서 listView에 넣기
+                    schedule_list.clear(); // schedule_list 초기화
+                    schedule_list.add("11:30 휴학각");
+                    schedule_list.add("12:30 휴학각");
+                    schedule_list.add("13:30 휴학각");
+                    schedule_list.add("14:30 휴학각");
+                    schedule_list.add("15:30 휴학각");
+
+                    calendar_list.setAdapter(adapter);
                 }
             });
 
@@ -62,7 +85,6 @@ public class CustomAdapter extends PagerAdapter {
             layout[5] = (LinearLayout)view.findViewById(R.id.layout6);
             layout[6] = (LinearLayout)view.findViewById(R.id.layout7);
             layout[7] = (LinearLayout)view.findViewById(R.id.layout8);
-
 
             LinearLayout.LayoutParams linearLayoutParams_date = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
@@ -117,14 +139,17 @@ public class CustomAdapter extends PagerAdapter {
                 layout[0].addView(textView_time);
             }
 
-            for(int i = 1; i<8; i++){
+            // 일정 추가
+            for(int i = 1; i<8; i++){ // 일 ~ 토요일
+
+                // 일정 집어 넣기 (해당 요일의 weight 총합이 = 24가 되어야함)
                 int time = 1;
                 LinearLayout.LayoutParams scheduleParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                scheduleParams.weight = time;
+                scheduleParams.weight = time;   // 해당 일정의 시간 (30분 = 1 time)
                 ScheduleView schedule = new ScheduleView(view.getContext());
                 schedule.schedule_name.setText("name");
                 schedule.schedule_info.setText("info");
-                schedule.setBackgroundResource(R.drawable.timetable_time_edge);
+                schedule.schedule_layout.setBackgroundColor(0xff000000+0xff0000);
                 schedule.setLayoutParams(scheduleParams);
                 layout[i].addView(schedule);
             }
@@ -132,6 +157,18 @@ public class CustomAdapter extends PagerAdapter {
         // friends
         } else {
             view = inflater.inflate(R.layout.friends, null);
+
+            final ListView friends_list = (ListView)view.findViewById(R.id.friends_list);
+            final ArrayList<String> friends = new ArrayList<String>();
+
+            // 오늘의 일정 정보(Default 값)
+            friends.add("김두영");
+            friends.add("윤혜진");
+            friends.add("유태우");
+            friends.add("바보");
+
+            final ArrayAdapter adapter = new ArrayAdapter(view.getContext(), android.R.layout.simple_list_item_1, friends);
+            friends_list.setAdapter(adapter);
         }
 
         container.addView(view);

@@ -11,13 +11,15 @@
         android:layout_height="wrap_content"
         android:id="@+id/schedule_name"
         android:text="schedule"
-        android:textSize="10dp" />
+        android:textColor="#fff"
+        android:textSize="15dp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/schedule_info"
         android:text="info"
-        android:textSize="5dp"/>
+        android:textColor="#fff"
+        android:textSize="10dp"/>
 
 </LinearLayout>
