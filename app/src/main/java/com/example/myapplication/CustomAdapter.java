@@ -117,6 +117,18 @@ public class CustomAdapter extends PagerAdapter {
                 layout[0].addView(textView_time);
             }
 
+            for(int i = 1; i<8; i++){
+                int time = 1;
+                LinearLayout.LayoutParams scheduleParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                scheduleParams.weight = time;
+                ScheduleView schedule = new ScheduleView(view.getContext());
+                schedule.schedule_name.setText("name");
+                schedule.schedule_info.setText("info");
+                schedule.setBackgroundResource(R.drawable.timetable_time_edge);
+                schedule.setLayoutParams(scheduleParams);
+                layout[i].addView(schedule);
+            }
+
         // friends
         } else {
             view = inflater.inflate(R.layout.friends, null);
