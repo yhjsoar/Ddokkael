@@ -108,8 +108,14 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode==1){
             if(resultCode==RESULT_OK){
                 //데이터 받기
-                String result = data.getStringExtra("result");
-                Toast.makeText(MainActivity.this,result, Toast.LENGTH_SHORT).show();
+                int popup_add = data.getExtras().getInt("button");
+                if(popup_add == 1){
+                    Toast.makeText(MainActivity.this, "일정을 추가했습니다.", Toast.LENGTH_SHORT).show();
+                    String schedule_name = data.getExtras().getString("name");
+                    String schedule_info = data.getExtras().getString("info");
+                }else{
+                    Toast.makeText(MainActivity.this, "일정 추가를 취소했습니다.", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
