@@ -81,6 +81,7 @@ public class CustomAdapter extends PagerAdapter {
             adapterCal = new ArrayAdapter(view.getContext(), android.R.layout.simple_list_item_1, schedule_list);
             calendar_list.setAdapter(adapterCal);
             String today = new SimpleDateFormat("yyyy/M/dd").format(new Date());
+            today = "   "+today;
             calendar_text.setText(today);
 
             getschedule();
@@ -95,7 +96,7 @@ public class CustomAdapter extends PagerAdapter {
                     day_ = getDay(year, month, dayOfMonth);
                     dt = getStringdate();
 
-                    calendar_text.setText(year+"/"+(month+1)+"/"+dayOfMonth);
+                    calendar_text.setText("   "+year+"/"+(month+1)+"/"+dayOfMonth);
 
                     getschedule();
                 }
