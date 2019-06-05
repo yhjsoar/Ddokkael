@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,14 +14,37 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 public class CustomAdapter extends PagerAdapter {
 
+    String name = "lezin";
+    String person_list = "Person_List";
+    String schedule = "schedule_list";
+    String id_list = "id_list";
+    String friend = "Friend_List";
+    String[] date = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
+
     LayoutInflater inflater;
+    DatabaseReference mPostReference = FirebaseDatabase.getInstance().getReference();
+    ArrayList<String> schedule_list;
+    ArrayList<String> friends;
+    ArrayAdapter adapterCal;
+    ArrayAdapter adapterFriend;
+
+    String dt;
+
+    int year_, month_, date_, day_;
 
     public CustomAdapter(LayoutInflater inflater) {
         this.inflater = inflater;
@@ -40,35 +64,40 @@ public class CustomAdapter extends PagerAdapter {
             CalendarView calendar = (CalendarView)view.findViewById(R.id.calendarView);
             final TextView calendar_text = (TextView)view.findViewById(R.id.calendar_text);
             final ListView calendar_list = (ListView)view.findViewById(R.id.calendar_list);
-            final ArrayList<String> schedule_list = new ArrayList<String>();
+            schedule_list = new ArrayList<String>();
 
             // 오늘의 일정 정보(Default 값)
-            schedule_list.add("9:00 A");
-            schedule_list.add("10:30 B");
-            schedule_list.add("11:00 모바일 앱 실습");
-            schedule_list.add("13:30 자퇴");
-            schedule_list.add("15:00 모바일 앱 실습");
-            schedule_list.add("16:30 자퇴");
 
-            final ArrayAdapter adapter = new ArrayAdapter(view.getContext(), android.R.layout.simple_list_item_1, schedule_list);
-            calendar_list.setAdapter(adapter);
+            long now = System.currentTimeMillis();
+            final Date date = new Date(now);
+            year_ = date.getYear();
+            month_ = date.getMonth();
+            date_ = date.getDate(); // 날짜
+            day_ = date.getDay(); // 요일
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", java.util.Locale.getDefault());
+            Date dat = new Date();
+            dt = dateFormat.format(dat);
+
+            adapterCal = new ArrayAdapter(view.getContext(), android.R.layout.simple_list_item_1, schedule_list);
+            calendar_list.setAdapter(adapterCal);
             String today = new SimpleDateFormat("yyyy/M/dd").format(new Date());
             calendar_text.setText(today);
+
+            getschedule();
 
             // 날자 선택
             calendar.setOnDateChangeListener(new CalendarView.OnDateChangeListener(){
                 @Override
                 public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-                    calendar_text.setText(year+"/"+(month+1)+"/"+dayOfMonth);
-                    // 해당 날짜의 data를 읽어와서 listView에 넣기
-                    schedule_list.clear(); // schedule_list 초기화
-                    schedule_list.add("11:30 휴학각");
-                    schedule_list.add("12:30 휴학각");
-                    schedule_list.add("13:30 휴학각");
-                    schedule_list.add("14:30 휴학각");
-                    schedule_list.add("15:30 휴학각");
+                    year_ = year;
+                    month_ = month+1;
+                    date_ = dayOfMonth; // 날짜
+                    day_ = getDay(year, month, dayOfMonth);
+                    dt = getStringdate();
 
-                    calendar_list.setAdapter(adapter);
+                    calendar_text.setText(year+"/"+(month+1)+"/"+dayOfMonth);
+
+                    getschedule();
                 }
             });
 
@@ -159,16 +188,12 @@ public class CustomAdapter extends PagerAdapter {
             view = inflater.inflate(R.layout.friends, null);
 
             final ListView friends_list = (ListView)view.findViewById(R.id.friends_list);
-            final ArrayList<String> friends = new ArrayList<String>();
+            friends = new ArrayList<String>();
 
-            // 오늘의 일정 정보(Default 값)
-            friends.add("김두영");
-            friends.add("윤혜진");
-            friends.add("유태우");
-            friends.add("바보");
+            adapterFriend = new ArrayAdapter(view.getContext(), android.R.layout.simple_list_item_1, friends);
+            friends_list.setAdapter(adapterFriend);
 
-            final ArrayAdapter adapter = new ArrayAdapter(view.getContext(), android.R.layout.simple_list_item_1, friends);
-            friends_list.setAdapter(adapter);
+            getFriend();
         }
 
         container.addView(view);
@@ -183,5 +208,76 @@ public class CustomAdapter extends PagerAdapter {
     @Override
     public boolean isViewFromObject(@NonNull View view, @NonNull Object o) {
         return view == o;
+    }
+
+    public void getschedule(){
+        mPostReference.child("list").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                schedule_list.clear();
+                for(DataSnapshot postSnapshot : dataSnapshot.child(person_list).child(name).child(schedule).child(date[day_]).getChildren()){
+                    FirebaseSchedule get = postSnapshot.getValue(FirebaseSchedule.class);
+                    String data = Integer.toString(get.start_time) + ":";
+                    data += get.start_min<10? "0"+Integer.toString(get.start_min): Integer.toString(get.start_min);
+                    data += "~"+Integer.toString(get.fin_time) + ":";
+                    data += get.fin_min<10? "0"+Integer.toString(get.fin_min) : Integer.toString(get.fin_min);
+                    data += " " + get.schedule;
+                    schedule_list.add(data);
+                }
+                Log.d("dt", dt);
+                for(DataSnapshot postSnapshot : dataSnapshot.child(person_list).child(name).child("schedule_date").child(dt).getChildren()){
+                    FirebaseSchedule get = postSnapshot.getValue(FirebaseSchedule.class);
+                    String data = Integer.toString(get.start_time) + ":";
+                    data += get.start_min<10? "0"+Integer.toString(get.start_min): Integer.toString(get.start_min);
+                    data += "~"+Integer.toString(get.fin_time) + ":";
+                    data += get.fin_min<10? "0"+Integer.toString(get.fin_min) : Integer.toString(get.fin_min);
+                    data += " " + get.schedule;
+                    schedule_list.add(data);
+                }
+                adapterCal.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    int getDay(int year, int month, int day){
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.DATE, day);
+        int day_of_week = cal.get(Calendar.DAY_OF_WEEK);
+        return day_of_week-1;
+    }
+
+    String getStringdate(){
+        String yr = Integer.toString(year_);
+        String mt = Integer.toString(month_);
+        String dy = Integer.toString(date_);
+        if(month_<10) mt = "0"+mt;
+        if(date_<10) dy = "0"+dy;
+        return yr+mt+dy;
+    }
+
+    public void getFriend(){
+        mPostReference.child("list").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                friends.clear();
+                for(DataSnapshot post : dataSnapshot.child(person_list).child(name).child(friend).getChildren()){
+                    FirebaseFriend get = post.getValue(FirebaseFriend.class);
+                    friends.add(get.name);
+                }
+                adapterFriend.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }
