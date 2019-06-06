@@ -4,12 +4,14 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CalendarView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -25,44 +27,22 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> data = null; // 일정 (일정 정보를 담는 리스트)
     ViewPager pager;
     Button btn[] = new Button[3];
+    ImageView friendPlus;
     int v = 0, d = 1;
+    String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /*
-        // data = <schedule, start h, start m, fin h, fin m>
-        data.add("database_class");
-        data.add("9");
-        data.add("0");
-        data.add("10");
-        data.add("30");
+        Intent intent = getIntent();
+        name = intent.getStringExtra("ID");
 
-        date_data.add(data);
-        timetable_data.add(date_data);
-        timetable_data.add(null);
-        timetable_data.add(null);
-        timetable_data.add(null);
-        timetable_data.add(null);
-        timetable_data.add(null);
-
-        data = null;
-
-        data.add("app");
-        data.add("18");
-        data.add("0");
-        data.add("21");
-        data.add("0");
-
-        date_data.add(data);
-        timetable_data.add(date_data);
-        */
 
         // Contents
         pager = (ViewPager)findViewById(R.id.viewPager);
-        CustomAdapter adapter = new CustomAdapter(getLayoutInflater());
+        CustomAdapter adapter = new CustomAdapter(getLayoutInflater(), name, this);
         pager.setAdapter(adapter);
         pager.setCurrentItem(1);
 
@@ -106,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, 1);
             }
         });
+
     }
 
     @Override
@@ -122,6 +103,9 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "일정 추가를 취소했습니다.", Toast.LENGTH_SHORT).show();
                 }
             }
+        }
+        else if(requestCode==2){
+
         }
     }
 }

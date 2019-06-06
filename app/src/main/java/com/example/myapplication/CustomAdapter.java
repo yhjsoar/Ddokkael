@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.util.Log;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CalendarView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -42,12 +44,16 @@ public class CustomAdapter extends PagerAdapter {
     ArrayAdapter adapterCal;
     ArrayAdapter adapterFriend;
 
+    MainActivity mainActivity;
+
     String dt;
 
     int year_, month_, date_, day_;
 
-    public CustomAdapter(LayoutInflater inflater) {
+    public CustomAdapter(LayoutInflater inflater, String name, MainActivity mainActivity) {
         this.inflater = inflater;
+        this.name = name;
+        this.mainActivity = mainActivity;
     }
 
     @Override
@@ -195,6 +201,17 @@ public class CustomAdapter extends PagerAdapter {
             friends_list.setAdapter(adapterFriend);
 
             getFriend();
+
+            ImageView friendPlus = (ImageView)view.findViewById(R.id.fp);
+            friendPlus.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    Intent intent = new Intent(mainActivity, AddFriend.class);
+                    intent.putExtra("name", name);
+                    mainActivity.startActivityForResult(intent, 2);
+                }
+            });
         }
 
         container.addView(view);
@@ -216,6 +233,9 @@ public class CustomAdapter extends PagerAdapter {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 schedule_list.clear();
+                if(!dataSnapshot.child(person_list).child(name).exists()){
+                    return;
+                }
                 for(DataSnapshot postSnapshot : dataSnapshot.child(person_list).child(name).child(schedule).child(date[day_]).getChildren()){
                     FirebaseSchedule get = postSnapshot.getValue(FirebaseSchedule.class);
                     String data = Integer.toString(get.start_time) + ":";
