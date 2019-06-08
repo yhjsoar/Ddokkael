@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CalendarView;
 import android.widget.ImageView;
@@ -33,6 +34,7 @@ public class CustomAdapter extends PagerAdapter {
     String name = "lezin";
     String person_list = "Person_List";
     String schedule = "schedule_list";
+    String request = "request_list";
     String id_list = "id_list";
     String friend = "Friend_List";
     String[] date = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
@@ -43,8 +45,14 @@ public class CustomAdapter extends PagerAdapter {
     ArrayList<String> friends;
     ArrayAdapter adapterCal;
     ArrayAdapter adapterFriend;
+    ArrayList<String> toRequest;
+    ArrayList<String> fromRequest;
+    ArrayAdapter adapterTo;
+    ArrayAdapter adapterFrom;
 
     MainActivity mainActivity;
+
+    TextView fromText, toText;
 
     String dt;
 
@@ -194,11 +202,23 @@ public class CustomAdapter extends PagerAdapter {
         } else {
             view = inflater.inflate(R.layout.friends, null);
 
+            fromText = (TextView)view.findViewById(R.id.fromText);
+            toText = (TextView)view.findViewById(R.id.toText);
+
             final ListView friends_list = (ListView)view.findViewById(R.id.friends_list);
+            final ListView friend_from = (ListView)view.findViewById(R.id.friends_request_list);
+            final ListView friend_to = (ListView)view.findViewById(R.id.friends_request_list2);
             friends = new ArrayList<String>();
+            toRequest = new ArrayList<String>();
+            fromRequest = new ArrayList<String>();
 
             adapterFriend = new ArrayAdapter(view.getContext(), android.R.layout.simple_list_item_1, friends);
+            adapterTo = new ArrayAdapter(view.getContext(), android.R.layout.simple_list_item_1, toRequest);
+            adapterFrom = new ArrayAdapter(view.getContext(), android.R.layout.simple_list_item_1, fromRequest);
+
             friends_list.setAdapter(adapterFriend);
+            friend_from.setAdapter(adapterFrom);
+            friend_to.setAdapter(adapterTo);
 
             getFriend();
 
@@ -206,10 +226,20 @@ public class CustomAdapter extends PagerAdapter {
             friendPlus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
                     Intent intent = new Intent(mainActivity, AddFriend.class);
                     intent.putExtra("name", name);
                     mainActivity.startActivityForResult(intent, 2);
+                }
+            });
+
+            friend_from.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String friend =(String)parent.getAdapter().getItem(position);
+                    Intent intent = new Intent(mainActivity, getRequest.class);
+                    intent.putExtra("name", name);
+                    intent.putExtra("friend", friend);
+                    mainActivity.startActivityForResult(intent, 3);
                 }
             });
         }
@@ -293,6 +323,30 @@ public class CustomAdapter extends PagerAdapter {
                     friends.add(get.name);
                 }
                 adapterFriend.notifyDataSetChanged();
+
+                fromRequest.clear();
+                for(DataSnapshot post : dataSnapshot.child(request).child(name).child("from").getChildren()){
+                    FirebaseFriend get = post.getValue(FirebaseFriend.class);
+                    fromRequest.add(get.name);
+                }
+                if(fromRequest.size()==0){
+                    fromText.setVisibility(View.VISIBLE);
+                } else{
+                    fromText.setVisibility(View.GONE);
+                }
+                adapterFrom.notifyDataSetChanged();
+
+                toRequest.clear();
+                for(DataSnapshot post : dataSnapshot.child(request).child(name).child("to").getChildren()){
+                    FirebaseFriend get = post.getValue(FirebaseFriend.class);
+                    toRequest.add(get.name);
+                }
+                if(toRequest.size()==0){
+                    toText.setVisibility(View.VISIBLE);
+                } else{
+                    toText.setVisibility(View.GONE);
+                }
+                adapterTo.notifyDataSetChanged();
             }
 
             @Override
