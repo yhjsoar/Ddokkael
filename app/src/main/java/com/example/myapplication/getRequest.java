@@ -47,7 +47,7 @@ public class getRequest extends Activity {
         Intent intent = getIntent();
         name = intent.getStringExtra("name");
         friend = intent.getStringExtra("friend");
-        textView.setText(name);
+        textView.setText(friend);
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
