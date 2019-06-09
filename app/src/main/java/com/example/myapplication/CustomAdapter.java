@@ -211,19 +211,6 @@ public class CustomAdapter extends PagerAdapter {
                     return false;
                 }
             });
-            /*
-            friends_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    // 친구 ID 알아내야함
-                    String friend = (String)parent.getAdapter().getItem(position);
-                    Intent intent = new Intent(mainActivity, FriendSchedule.class);
-                    intent.putExtra("name", friend);
-                    mainActivity.startActivity(intent);
-                }
-            });
-            */
         }
 
         container.addView(view);
@@ -344,6 +331,7 @@ public class CustomAdapter extends PagerAdapter {
         mPostReference.child("list").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(int i=1;i<8;i++)     layout[i].removeAllViews();
                 ArrayList<timeTable> timeArraySun = new ArrayList<timeTable>();
                 ArrayList<timeTable> timeArrayMon = new ArrayList<timeTable>();
                 ArrayList<timeTable> timeArrayTue = new ArrayList<timeTable>();
@@ -475,13 +463,17 @@ public class CustomAdapter extends PagerAdapter {
                     float sum_time = 0;
 
                     for(int j=0;j<table.size();j++){
+                        if(table.get(j).finishTime<=9*60)   continue;
+                        if(table.get(j).startTime>=21*60)   continue;
+                        if(table.get(j).finishTime>9*60 && table.get(j).startTime<9*60) table.get(j).startTime = 9*60;
+                        else if(table.get(j).finishTime>21*60 && table.get(j).startTime<21*60) table.get(j).finishTime = 21*60;
                         int dur = table.get(j).startTime-lasttime;
                         float time;
                         if(dur>0){
                             time = (float)dur / 30f;
                             sum_time += time;
                             Log.d("time", Float.toString(time));
-                            LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                            LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
                             scheduleParams1.weight = time;
                             ScheduleView schedule2 = new ScheduleView(view.getContext());
                             schedule2.schedule_name.setText("");
@@ -490,10 +482,12 @@ public class CustomAdapter extends PagerAdapter {
                             schedule2.setLayoutParams(scheduleParams1);
                             layout[i].addView(schedule2);
                         }
+                        Log.d("스케줄, sum time1", table.get(j).name+"&"+Float.toString(sum_time));
                         dur = table.get(j).finishTime-table.get(j).startTime;
                         time = (float)dur / 30f;
                         sum_time += time;
-                        LinearLayout.LayoutParams scheduleParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        Log.d("스케줄, sum time2", table.get(j).name+"&"+Float.toString(sum_time));
+                        LinearLayout.LayoutParams scheduleParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,0);
                         scheduleParams.weight = time;   // 해당 일정의 시간 (30분 = 1 time)
                         ScheduleView schedule = new ScheduleView(view.getContext());
                         schedule.schedule_name.setText(table.get(j).name);
@@ -510,7 +504,7 @@ public class CustomAdapter extends PagerAdapter {
                         float time = (float)dur / 30f;
                         sum_time += time;
                         Log.d("time", Float.toString(time));
-                        LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
                         scheduleParams1.weight = time;
                         ScheduleView schedule2 = new ScheduleView(view.getContext());
                         schedule2.schedule_name.setText("");

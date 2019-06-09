@@ -50,6 +50,8 @@ public class AddScheduleActivity extends Activity {
 
     FirebaseSchedule addingSchedule;
 
+    int fst = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +72,8 @@ public class AddScheduleActivity extends Activity {
         cancel = (Button)findViewById(R.id.btn_cancel);
         sw = (Switch)findViewById(R.id.switch1);
         checkBox = (CheckBox)findViewById(R.id.isOpen);
+
+        checkBox.setChecked(true);
 
         mPostReference = FirebaseDatabase.getInstance().getReference();
 
@@ -107,7 +111,7 @@ public class AddScheduleActivity extends Activity {
                 int sstime = sTime*60 + sMin;
                 int fftime = fTime*60+fMin;
                 if(sstime >= fftime) {
-                    Toast.makeText(AddScheduleActivity.this, "종료 시간이 시작 시간보다 빠릅니다.", Toast.LENGTH_SHORT);
+                    Toast.makeText(AddScheduleActivity.this, "종료 시간이 시작 시간보다 빠릅니다.", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 String info = schedule_memo.getText().toString();
@@ -195,9 +199,11 @@ public class AddScheduleActivity extends Activity {
         Map<String, Object> postValues = null;
         postValues = addingSchedule.toMap();
         if(state){
-            childUpdates.put("/list/Person_List/"+name+"/"+getString(R.string.schedule)+"/"+day_list[nowDay]+"/"+addingSchedule.schedule, postValues);
+            if(fst!=0) childUpdates.put("/list/Person_List/"+name+"/"+getString(R.string.schedule)+"/"+day_list[nowDay]+"/"+addingSchedule.schedule+Integer.toString(fst), postValues);
+            else childUpdates.put("/list/Person_List/"+name+"/"+getString(R.string.schedule)+"/"+day_list[nowDay]+"/"+addingSchedule.schedule, postValues);
         } else{
-            childUpdates.put("/list/Person_List/"+name+"/schedule_date/"+day_list[nowDay]+"/"+dt+"/"+addingSchedule.schedule, postValues);
+            if(fst!=0) childUpdates.put("/list/Person_List/"+name+"/schedule_date/"+day_list[nowDay]+"/"+dt+"/"+addingSchedule.schedule+Integer.toString(fst), postValues);
+            else childUpdates.put("/list/Person_List/"+name+"/schedule_date/"+day_list[nowDay]+"/"+dt+"/"+addingSchedule.schedule, postValues);
         }
         mPostReference.updateChildren(childUpdates);
         Toast.makeText(AddScheduleActivity.this, addingSchedule.schedule, Toast.LENGTH_SHORT).show();
@@ -213,6 +219,7 @@ public class AddScheduleActivity extends Activity {
                 int isFirst = 0;
                 for(DataSnapshot postSnapshot : dataSnapshot.child(getString(R.string.person)).child(name).child(getString(R.string.schedule)).child(day_list[nowDay]).getChildren()){
                     FirebaseSchedule get = postSnapshot.getValue(FirebaseSchedule.class);
+
                     int st = get.start_time*60+get.start_min;
                     int ft = get.fin_time*60+get.fin_min;
 
@@ -224,7 +231,14 @@ public class AddScheduleActivity extends Activity {
                         break;
                     }
                     if(get.schedule.equals(addingSchedule.schedule)){
-                        isFirst++;
+                        String key = postSnapshot.getKey();
+                        if(key.equals(addingSchedule.schedule)) isFirst++;
+                        else{
+                            String split = key.substring(addingSchedule.schedule.length());
+                            Log.d("split", split);
+                            int size = Integer.parseInt(split);
+                            if(size > isFirst) isFirst = size+1;
+                        }
                     }
                 }
                 if(state){
@@ -247,13 +261,21 @@ public class AddScheduleActivity extends Activity {
                                 break;
                             }
                             if(get.schedule.equals(addingSchedule.schedule)){
-                                isFirst++;
+                                String key = postSnapshot.getKey();
+                                if(key.equals(addingSchedule.schedule)) isFirst++;
+                                else{
+                                    String split = key.substring(addingSchedule.schedule.length());
+                                    Log.d("split", split);
+                                    int size = Integer.parseInt(split);
+                                    if(size > isFirst) isFirst = size+1;
+                                }
                             }
                         }
                     }
                 } else{
                     for(DataSnapshot postSnapshot : dataSnapshot.child(getString(R.string.person)).child(name).child("schedule_date").child(day_list[nowDay]).child(dt).getChildren()){
                         FirebaseSchedule get = postSnapshot.getValue(FirebaseSchedule.class);
+                        Log.d("왜 다안읽어", get.schedule+postSnapshot.getKey());
                         int st = get.start_time*60+get.start_min;
                         int ft = get.fin_time*60+get.fin_min;
 
@@ -265,14 +287,21 @@ public class AddScheduleActivity extends Activity {
                             break;
                         }
                         if(get.schedule.equals(addingSchedule.schedule)){
-                            isFirst++;
+                            String key = postSnapshot.getKey();
+                            if(key.equals(addingSchedule.schedule)) isFirst++;
+                            else{
+                                String split = key.substring(addingSchedule.schedule.length());
+                                Log.d("split", split);
+                                int size = Integer.parseInt(split);
+                                if(size > isFirst) isFirst = size+1;
+                            }
                         }
                     }
                 }
                 if(cannot){
                     Toast.makeText(AddScheduleActivity.this, "같은 시간대에 이미 일정이 있습니다", Toast.LENGTH_SHORT).show();
                 } else{
-                    if(isFirst!=0) addingSchedule.schedule = addingSchedule.schedule + Integer.toString(isFirst);
+                    fst = isFirst;
                     postFirebaseDatabase(true);
                 }
             }
