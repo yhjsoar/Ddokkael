@@ -67,6 +67,7 @@ public class ScheduleView extends LinearLayout {
         schedule_info.setText(info_string);
         Integer layout_color = typedArray.getColor(R.styleable.ScheduleView_backgroundColor, 0);
         schedule_layout.setBackgroundColor(layout_color);
+        schedule_layout.setBackgroundColor(R.drawable.timetable_time_edge);
 
         typedArray.recycle();
     }

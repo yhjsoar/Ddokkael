@@ -36,7 +36,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        intent = new Intent(LoginActivity.this, JoininActivity.class);
+        intent = new Intent(LoginActivity.this, MainActivity.class);
 
         mPostReference = FirebaseDatabase.getInstance().getReference();
 
@@ -80,6 +80,7 @@ public class LoginActivity extends AppCompatActivity {
         joinin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                intent = new Intent(LoginActivity.this, JoininActivity.class);
                 // firebase에 유저 등록 후 MainActivity로 intent
                 intent.putExtra("data", "Test popup");
                 startActivityForResult(intent, 1);

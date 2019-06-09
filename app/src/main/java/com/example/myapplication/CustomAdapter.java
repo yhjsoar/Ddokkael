@@ -144,7 +144,7 @@ public class CustomAdapter extends PagerAdapter {
             layout[6] = (LinearLayout)view.findViewById(R.id.layout7);
             layout[7] = (LinearLayout)view.findViewById(R.id.layout8);
 
-            LinearLayout.LayoutParams linearLayoutParams_date = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            LinearLayout.LayoutParams linearLayoutParams_date = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
 
             for(int i = 0; i<8; i++){
                 TextView textView_date = new TextView(view.getContext());
@@ -242,6 +242,17 @@ public class CustomAdapter extends PagerAdapter {
                 }
             });
 
+            friends_list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(view.getContext(), PopUpFriend.class);
+                    intent.putExtra("name", (String)parent.getAdapter().getItem(position));
+                    intent.putExtra("myname", name);
+                    mainActivity.startActivity(intent);
+                    return false;
+                }
+            });
+            /*
             friends_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -253,6 +264,7 @@ public class CustomAdapter extends PagerAdapter {
                     mainActivity.startActivity(intent);
                 }
             });
+            */
         }
 
         container.addView(view);

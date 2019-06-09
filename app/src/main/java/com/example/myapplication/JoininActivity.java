@@ -56,14 +56,6 @@ public class JoininActivity extends Activity {
                 else{
                     check();
                 }
-//
-//                Intent intent = new Intent();
-//                intent.putExtra("button", 1);
-//                intent.putExtra("ID",id);
-//                intent.putExtra("PW", pw);
-//                setResult(RESULT_OK, intent);
-//
-//                finish();
             }
         });
 

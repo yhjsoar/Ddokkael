@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -34,22 +35,20 @@ public class AddScheduleActivity extends Activity {
 
     EditText schedule_name, schedule_memo;
     Button add, cancel;
-    TextView schedule_date, schedule_start, schedule_end;
-    String date, startTime, endTime;
-    Boolean Setdate, SetStart, SetEnd;
+    TextView schedule_date, schedule_start, schedule_end, schedule_date_day;
+    Switch sw;
     CheckBox checkBox;
+    Boolean state = false;
 
-    String name;
-
-    int sTime=-1, sMin=-1, fTime=-1, fMin=-1;
-    String dt="";
-    int nowDay;
+    int sTime=-1, sMin=-1, fTime=-1, fMin=-1, nowDay;
+    String dt="", name;
+    String date, startTime, endTime, day="";
+    String[] day_list = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
+    String dy="";
 
     DatabaseReference mPostReference;
 
     FirebaseSchedule addingSchedule;
-
-    String[] day = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +65,10 @@ public class AddScheduleActivity extends Activity {
         schedule_date = (TextView)findViewById(R.id.setDateTextView);
         schedule_start = (TextView)findViewById(R.id.setStartTimeTextView);
         schedule_end = (TextView)findViewById(R.id.setEndTimeTextView);
+        schedule_date_day = (TextView)findViewById(R.id.date_day);
         add = (Button)findViewById(R.id.btn_add);
         cancel = (Button)findViewById(R.id.btn_cancel);
+        sw = (Switch)findViewById(R.id.switch1);
         checkBox = (CheckBox)findViewById(R.id.isOpen);
 
         mPostReference = FirebaseDatabase.getInstance().getReference();
@@ -76,17 +77,43 @@ public class AddScheduleActivity extends Activity {
         Intent intent = getIntent();
         name = intent.getStringExtra("name");
 
+        sw.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CheckState();
+            }
+        });
+
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String schedule = schedule_name.getText().toString();
                 Log.d("정보", schedule+Integer.toString(sTime)+"~"+Integer.toString(fTime)+"/"+dt);
-                if(schedule.length()==0 || sTime==-1 || fTime==-1 || dt.length()==0) return;
+                if(state){
+                    day = schedule_date.getText().toString();
+                    Log.d("day", day);
+                    if(day.equals("일요일"))   nowDay = 0;
+                    else if(day.equals("월요일"))   nowDay = 1;
+                    else if(day.equals("화요일"))   nowDay = 2;
+                    else if(day.equals("수요일"))   nowDay = 3;
+                    else if(day.equals("목요일"))   nowDay = 4;
+                    else if(day.equals("금요일"))   nowDay = 5;
+                    else nowDay = 6;
+                    if(schedule.length()==0 || sTime == -1 || fTime == -1 || day.length()==0) return;
+                }else {
+                    if (schedule.length() == 0 || sTime == -1 || fTime == -1 || dt.length() == 0)
+                        return;
+                }
+                int sstime = sTime*60 + sMin;
+                int fftime = fTime*60+fMin;
+                if(sstime >= fftime) {
+                    Toast.makeText(AddScheduleActivity.this, "종료 시간이 시작 시간보다 빠릅니다.", Toast.LENGTH_SHORT);
+                    return;
+                }
                 String info = schedule_memo.getText().toString();
-                int checked = checkBox.isChecked()? 1 : 0;
+                int checked = checkBox.isChecked() ? 1 : 0;
 
                 addingSchedule = new FirebaseSchedule(schedule, info, sTime, sMin, fTime, fMin, checked);
-
                 check();
             }
         });
@@ -101,24 +128,29 @@ public class AddScheduleActivity extends Activity {
         schedule_date.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                DatePickerDialog date_dialog = new DatePickerDialog(AddScheduleActivity.this, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                if(state){
+                    Intent intent = new Intent(AddScheduleActivity.this, PopUpDaySelect.class);
+                    startActivityForResult(intent, 1);
+                } else {
+                    DatePickerDialog date_dialog = new DatePickerDialog(AddScheduleActivity.this, new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
 
-                        nowDay = getDay(year, month, dayOfMonth);
-                        Log.d("day", Integer.toString(nowDay));
+                            nowDay = getDay(year, month, dayOfMonth);
+                            Log.d("day", Integer.toString(nowDay));
 
-                        date = String.format("%d.%d.%d",year,month+1,dayOfMonth);
-                        schedule_date.setText(date);
-                        String mt = Integer.toString(month+1);
-                        String dt_ = Integer.toString(dayOfMonth);
-                        if(mt.length()==1) mt = "0"+mt;
-                        if(dt_.length()==1) dt_ = "0"+dt_;
-                        dt = Integer.toString(year)+mt+dt_;
-                    }
-                }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE));
+                            date = String.format("%d.%d.%d", year, month + 1, dayOfMonth);
+                            schedule_date.setText(date);
+                            String mt = Integer.toString(month + 1);
+                            String dt_ = Integer.toString(dayOfMonth);
+                            if (mt.length() == 1) mt = "0" + mt;
+                            if (dt_.length() == 1) dt_ = "0" + dt_;
+                            dt = Integer.toString(year) + mt + dt_;
+                        }
+                    }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE));
 
-                date_dialog.show();
+                    date_dialog.show();
+                }
             }
         });
 
@@ -161,10 +193,12 @@ public class AddScheduleActivity extends Activity {
     public void postFirebaseDatabase(boolean add){
         Map<String, Object> childUpdates = new HashMap<>();
         Map<String, Object> postValues = null;
-        if(add){
-            postValues = addingSchedule.toMap();
+        postValues = addingSchedule.toMap();
+        if(state){
+            childUpdates.put("/list/Person_List/"+name+"/"+getString(R.string.schedule)+"/"+day_list[nowDay]+"/"+addingSchedule.schedule, postValues);
+        } else{
+            childUpdates.put("/list/Person_List/"+name+"/schedule_date/"+day_list[nowDay]+"/"+dt+"/"+addingSchedule.schedule, postValues);
         }
-        childUpdates.put("/list/Person_List/"+name+"/schedule_date/"+day[nowDay]+"/"+dt+"/"+addingSchedule.schedule, postValues);
         mPostReference.updateChildren(childUpdates);
         Toast.makeText(AddScheduleActivity.this, addingSchedule.schedule, Toast.LENGTH_SHORT).show();
 
@@ -177,7 +211,7 @@ public class AddScheduleActivity extends Activity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 boolean cannot = false;
                 int isFirst = 0;
-                for(DataSnapshot postSnapshot : dataSnapshot.child(getString(R.string.person)).child(name).child(getString(R.string.schedule)).child(day[nowDay]).getChildren()){
+                for(DataSnapshot postSnapshot : dataSnapshot.child(getString(R.string.person)).child(name).child(getString(R.string.schedule)).child(day_list[nowDay]).getChildren()){
                     FirebaseSchedule get = postSnapshot.getValue(FirebaseSchedule.class);
                     int st = get.start_time*60+get.start_min;
                     int ft = get.fin_time*60+get.fin_min;
@@ -185,7 +219,7 @@ public class AddScheduleActivity extends Activity {
                     int stO = sTime*60+sMin;
                     int ftO = fTime*60+fMin;
 
-                    if ((st < ftO && ftO <= ft) || (st <= stO && stO < ft)) {
+                    if ((st < ftO && ftO <= ft) || (st <= stO && stO < ft) || (st <= stO && ftO <= ft)) {
                         cannot = true;
                         break;
                     }
@@ -193,23 +227,48 @@ public class AddScheduleActivity extends Activity {
                         isFirst++;
                     }
                 }
-                for(DataSnapshot postSnapshot : dataSnapshot.child(getString(R.string.person)).child(name).child("schedule_date").child(day[nowDay]).child(dt).getChildren()){
-                    FirebaseSchedule get = postSnapshot.getValue(FirebaseSchedule.class);
-                    int st = get.start_time*60+get.start_min;
-                    int ft = get.fin_time*60+get.fin_min;
+                if(state){
+                    for(DataSnapshot postSnapshot : dataSnapshot.child(getString(R.string.person)).child(name).child("schedule_date").child(day_list[nowDay]).getChildren()){
+                        for(DataSnapshot post : postSnapshot.getChildren()){
+                            FirebaseSchedule get = post.getValue(FirebaseSchedule.class);
 
-                    int stO = sTime*60+sMin;
-                    int ftO = fTime*60+fMin;
+                            int st = get.start_time*60+get.start_min;
+                            int ft = get.fin_time*60+get.fin_min;
 
-                    if ((st < ftO && ftO <= ft) || (st <= stO && stO < ft)) {
-                        cannot = true;
-                        break;
+                            int stO = sTime*60+sMin;
+                            int ftO = fTime*60+fMin;
+
+                            Log.d("스케줄", get.schedule);
+                            Log.d("시간s"+st, Integer.toString(stO));
+                            Log.d("시간f"+ft, Integer.toString(ftO));
+
+                            if ((st < ftO && ftO <= ft) || (st <= stO && stO < ft) || (st <= stO && ftO <= ft) || (stO <= st && ft <= ftO)) {
+                                cannot = true;
+                                break;
+                            }
+                            if(get.schedule.equals(addingSchedule.schedule)){
+                                isFirst++;
+                            }
+                        }
                     }
-                    if(get.schedule.equals(addingSchedule.schedule)){
-                        isFirst++;
+                } else{
+                    for(DataSnapshot postSnapshot : dataSnapshot.child(getString(R.string.person)).child(name).child("schedule_date").child(day_list[nowDay]).child(dt).getChildren()){
+                        FirebaseSchedule get = postSnapshot.getValue(FirebaseSchedule.class);
+                        int st = get.start_time*60+get.start_min;
+                        int ft = get.fin_time*60+get.fin_min;
+
+                        int stO = sTime*60+sMin;
+                        int ftO = fTime*60+fMin;
+
+                        if ((st < ftO && ftO <= ft) || (st <= stO && stO < ft)) {
+                            cannot = true;
+                            break;
+                        }
+                        if(get.schedule.equals(addingSchedule.schedule)){
+                            isFirst++;
+                        }
                     }
                 }
-                Log.d("머야", "대체");
                 if(cannot){
                     Toast.makeText(AddScheduleActivity.this, "같은 시간대에 이미 일정이 있습니다", Toast.LENGTH_SHORT).show();
                 } else{
@@ -225,11 +284,25 @@ public class AddScheduleActivity extends Activity {
         });
     }
 
-    int getDay(int year, int month, int day){
+    private void CheckState(){
+        schedule_date_day = (TextView)findViewById(R.id.date_day);
+        schedule_date = (TextView)findViewById(R.id.setDateTextView);
+        if(sw.isChecked()){
+            schedule_date_day.setText("요일");
+            schedule_date.setText("요일");
+            state = true;
+        }else{
+            schedule_date_day.setText("날짜");
+            schedule_date.setText("날짜");
+            state = false;
+        }
+    }
+
+    int getDay(int year, int month, int dayint){
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, year);
         cal.set(Calendar.MONTH, month);
-        cal.set(Calendar.DATE, day);
+        cal.set(Calendar.DATE, dayint);
         int day_of_week = cal.get(Calendar.DAY_OF_WEEK);
         return day_of_week-1;
     }
@@ -240,5 +313,16 @@ public class AddScheduleActivity extends Activity {
         setResult(RESULT_OK, intent);
 
         finish();
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        if(requestCode==1){
+            if(resultCode==RESULT_OK){
+                //데이터 받기
+                day = data.getExtras().getString("day");
+                schedule_date = (TextView)findViewById(R.id.setDateTextView);
+                schedule_date.setText(day);
+            }
+        }
     }
 }

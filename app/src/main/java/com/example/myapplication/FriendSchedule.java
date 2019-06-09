@@ -24,7 +24,8 @@ import java.util.Date;
 
 public class FriendSchedule extends Activity {
 
-    String name = "lezin";
+    String name1 = "lezin";
+    String mode, name2;
     String person_list = "Person_List";
     String schedule = "schedule_list";
     String request = "request_list";
@@ -45,80 +46,88 @@ public class FriendSchedule extends Activity {
         setContentView(R.layout.timetable);
 
         Intent intent = getIntent();
-        name = intent.getStringExtra("name");
+        mode = intent.getStringExtra("mode");
 
-        long now = System.currentTimeMillis();
-        final Date date = new Date(now);
-        year_ = date.getYear();
-        month_ = date.getMonth();
-        date_ = date.getDate(); // 날짜
-        day_ = date.getDay(); // 요일
+        if(mode.equals("schedule")){
+            name1 = intent.getStringExtra("name");
+            long now = System.currentTimeMillis();
+            final Date date = new Date(now);
+            year_ = date.getYear();
+            month_ = date.getMonth();
+            date_ = date.getDate(); // 날짜
+            day_ = date.getDay(); // 요일
 
-        today_year = year_+1900;
-        today_month = month_+1;
-        today_date = date_;
-        today_day =day_;
+            today_year = year_+1900;
+            today_month = month_+1;
+            today_date = date_;
+            today_day =day_;
 
-        layout[0] = (LinearLayout)findViewById(R.id.layout1);
-        layout[1] = (LinearLayout)findViewById(R.id.layout2);
-        layout[2] = (LinearLayout)findViewById(R.id.layout3);
-        layout[3] = (LinearLayout)findViewById(R.id.layout4);
-        layout[4] = (LinearLayout)findViewById(R.id.layout5);
-        layout[5] = (LinearLayout)findViewById(R.id.layout6);
-        layout[6] = (LinearLayout)findViewById(R.id.layout7);
-        layout[7] = (LinearLayout)findViewById(R.id.layout8);
+            layout[0] = (LinearLayout)findViewById(R.id.layout1);
+            layout[1] = (LinearLayout)findViewById(R.id.layout2);
+            layout[2] = (LinearLayout)findViewById(R.id.layout3);
+            layout[3] = (LinearLayout)findViewById(R.id.layout4);
+            layout[4] = (LinearLayout)findViewById(R.id.layout5);
+            layout[5] = (LinearLayout)findViewById(R.id.layout6);
+            layout[6] = (LinearLayout)findViewById(R.id.layout7);
+            layout[7] = (LinearLayout)findViewById(R.id.layout8);
 
-        LinearLayout.LayoutParams linearLayoutParams_date = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            LinearLayout.LayoutParams linearLayoutParams_date = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
-        for(int i = 0; i<8; i++){
-            TextView textView_date = new TextView(this);
-            textView_date.setBackgroundResource(R.drawable.timetable_time_edge);
-            textView_date.setLayoutParams(linearLayoutParams_date);
-            String timetable_date = null;
-            switch(i){
-                case 0:
-                    timetable_date = " ";
-                    break;
-                case 1:
-                    timetable_date = "일";
-                    break;
-                case 2:
-                    timetable_date = "월";
-                    break;
-                case 3:
-                    timetable_date = "화";
-                    break;
-                case 4:
-                    timetable_date = "수";
-                    break;
-                case 5:
-                    timetable_date = "목";
-                    break;
-                case 6:
-                    timetable_date = "금";
-                    break;
-                case 7:
-                    timetable_date = "토";
-                    break;
-                default:
-                    break;
+            for(int i = 0; i<8; i++){
+                TextView textView_date = new TextView(this);
+                textView_date.setBackgroundResource(R.drawable.timetable_time_edge);
+                textView_date.setLayoutParams(linearLayoutParams_date);
+                String timetable_date = null;
+                switch(i){
+                    case 0:
+                        timetable_date = " ";
+                        break;
+                    case 1:
+                        timetable_date = "일";
+                        break;
+                    case 2:
+                        timetable_date = "월";
+                        break;
+                    case 3:
+                        timetable_date = "화";
+                        break;
+                    case 4:
+                        timetable_date = "수";
+                        break;
+                    case 5:
+                        timetable_date = "목";
+                        break;
+                    case 6:
+                        timetable_date = "금";
+                        break;
+                    case 7:
+                        timetable_date = "토";
+                        break;
+                    default:
+                        break;
+                }
+
+                textView_date.setText(timetable_date);
+                textView_date.setGravity(Gravity.CENTER);
+                layout[i].addView(textView_date);
             }
 
-            textView_date.setText(timetable_date);
-            textView_date.setGravity(Gravity.CENTER);
-            layout[i].addView(textView_date);
-        }
+            LinearLayout.LayoutParams linearLayoutParams_time = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
+            linearLayoutParams_time.weight = 1;
 
-        LinearLayout.LayoutParams linearLayoutParams_time = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        linearLayoutParams_time.weight = 1;
+            for(int i = 0; i<12; i++){
+                TextView textView_time = new TextView(this);
+                textView_time.setBackgroundResource(R.drawable.timetable_time_edge);
+                textView_time.setLayoutParams(linearLayoutParams_time);
+                textView_time.setGravity(Gravity.RIGHT);
+                textView_time.setText(Integer.toString(9+i) + " ");
+                layout[0].addView(textView_time);
+            }
+        } else{
+            name1 = intent.getStringExtra("name1");
+            name2 = intent.getStringExtra("name2");
 
-        for(int i = 0; i<12; i++){
-            TextView textView_time = new TextView(this);
-            textView_time.setBackgroundResource(R.drawable.timetable_time_edge);
-            textView_time.setLayoutParams(linearLayoutParams_time);
-            textView_time.setGravity(Gravity.RIGHT);
-            textView_time.setText(Integer.toString(9+i) + " ");
-            layout[0].addView(textView_time);
+            // name1과 name2를 비교하여 일정 추가
         }
 
         getscheduleForTable();
@@ -137,8 +146,9 @@ public class FriendSchedule extends Activity {
                 ArrayList<FriendSchedule.timeTable> timeArraySat = new ArrayList<FriendSchedule.timeTable>();
 
                 for(int i=0;i<7;i++){
-                    for(DataSnapshot postSnapshot : dataSnapshot.child(person_list).child(name).child(schedule).child(date[i]).getChildren()){
+                    for(DataSnapshot postSnapshot : dataSnapshot.child(person_list).child(name1).child(schedule).child(date[i]).getChildren()){
                         FirebaseSchedule get = postSnapshot.getValue(FirebaseSchedule.class);
+                        if(get.isOpen == 0) continue;
                         Log.d("shedule", get.schedule);
                         int startTime = get.start_time*60 + get.start_min;
                         int finTime = get.fin_time*60+get.fin_min;
@@ -216,8 +226,9 @@ public class FriendSchedule extends Activity {
                     }
                 }
                 for(int i=0;i<7;i++){
-                    for(DataSnapshot postSnapshot : dataSnapshot.child(person_list).child(name).child("schedule_date").child(date[i]).child(week[i]).getChildren()){
+                    for(DataSnapshot postSnapshot : dataSnapshot.child(person_list).child(name1).child("schedule_date").child(date[i]).child(week[i]).getChildren()){
                         FirebaseSchedule get = postSnapshot.getValue(FirebaseSchedule.class);
+                        if(get.isOpen == 0) continue;
                         int startTime = get.start_time*60 + get.start_min;
                         int finTime = get.fin_time*60+get.fin_min;
                         String sche = get.schedule;
