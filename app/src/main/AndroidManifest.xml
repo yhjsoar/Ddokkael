@@ -25,6 +25,10 @@
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Dialog" />
         <activity
+            android:name=".DeleteFriend"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Dialog" />
+        <activity
             android:name=".LoginActivity"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -35,6 +39,10 @@
         </activity>
         <activity
             android:name=".JoininActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Dialog" />
+        <activity
+            android:name=".CancelFriendRequset"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Dialog" />
         <activity
