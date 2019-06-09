@@ -71,47 +71,6 @@ public class FriendSchedule extends Activity {
             layout[6] = (LinearLayout)findViewById(R.id.layout7);
             layout[7] = (LinearLayout)findViewById(R.id.layout8);
 
-            LinearLayout.LayoutParams linearLayoutParams_date = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
-            for(int i = 0; i<8; i++){
-                TextView textView_date = new TextView(this);
-                textView_date.setBackgroundResource(R.drawable.timetable_time_edge);
-                textView_date.setLayoutParams(linearLayoutParams_date);
-                String timetable_date = null;
-                switch(i){
-                    case 0:
-                        timetable_date = " ";
-                        break;
-                    case 1:
-                        timetable_date = "일";
-                        break;
-                    case 2:
-                        timetable_date = "월";
-                        break;
-                    case 3:
-                        timetable_date = "화";
-                        break;
-                    case 4:
-                        timetable_date = "수";
-                        break;
-                    case 5:
-                        timetable_date = "목";
-                        break;
-                    case 6:
-                        timetable_date = "금";
-                        break;
-                    case 7:
-                        timetable_date = "토";
-                        break;
-                    default:
-                        break;
-                }
-
-                textView_date.setText(timetable_date);
-                textView_date.setGravity(Gravity.CENTER);
-                layout[i].addView(textView_date);
-            }
-
             LinearLayout.LayoutParams linearLayoutParams_time = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
             linearLayoutParams_time.weight = 1;
 

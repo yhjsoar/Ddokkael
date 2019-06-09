@@ -144,47 +144,6 @@ public class CustomAdapter extends PagerAdapter {
             layout[6] = (LinearLayout)view.findViewById(R.id.layout7);
             layout[7] = (LinearLayout)view.findViewById(R.id.layout8);
 
-            LinearLayout.LayoutParams linearLayoutParams_date = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
-
-            for(int i = 0; i<8; i++){
-                TextView textView_date = new TextView(view.getContext());
-                textView_date.setBackgroundResource(R.drawable.timetable_time_edge);
-                textView_date.setLayoutParams(linearLayoutParams_date);
-                String date = null;
-                switch(i){
-                    case 0:
-                        date = " ";
-                        break;
-                    case 1:
-                        date = "일";
-                        break;
-                    case 2:
-                        date = "월";
-                        break;
-                    case 3:
-                        date = "화";
-                        break;
-                    case 4:
-                        date = "수";
-                        break;
-                    case 5:
-                        date = "목";
-                        break;
-                    case 6:
-                        date = "금";
-                        break;
-                    case 7:
-                        date = "토";
-                        break;
-                    default:
-                        break;
-                }
-
-                textView_date.setText(date);
-                textView_date.setGravity(Gravity.CENTER);
-                layout[i].addView(textView_date);
-            }
-
             LinearLayout.LayoutParams linearLayoutParams_time = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             linearLayoutParams_time.weight = 1;
 
