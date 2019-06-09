@@ -1,59 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/timetable_layout"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="410dp"
         android:layout_height="match_parent"
         android:orientation="horizontal">
 
         <LinearLayout
             android:id="@+id/layout1"
-            android:layout_width="wrap_content"
+            android:layout_width="18dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:orientation="vertical"></LinearLayout>
         <LinearLayout
             android:id="@+id/layout2"
-            android:layout_width="wrap_content"
+            android:layout_width="56dp"
             android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:orientation="vertical"></LinearLayout>
+            android:orientation="vertical"
+            android:weightSum="24"></LinearLayout>
         <LinearLayout
             android:id="@+id/layout3"
-            android:layout_width="wrap_content"
+            android:layout_width="56dp"
             android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:orientation="vertical"></LinearLayout>
+            android:orientation="vertical"
+            android:weightSum="24"></LinearLayout>
         <LinearLayout
             android:id="@+id/layout4"
-            android:layout_width="wrap_content"
+            android:layout_width="56dp"
             android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:orientation="vertical"></LinearLayout>
+            android:orientation="vertical"
+            android:weightSum="24"></LinearLayout>
         <LinearLayout
             android:id="@+id/layout5"
-            android:layout_width="wrap_content"
+            android:layout_width="56dp"
             android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:orientation="vertical"></LinearLayout>
+            android:orientation="vertical"
+            android:weightSum="24"></LinearLayout>
         <LinearLayout
             android:id="@+id/layout6"
-            android:layout_width="wrap_content"
+            android:layout_width="56dp"
             android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:orientation="vertical"></LinearLayout>
+            android:orientation="vertical"
+            android:weightSum="24"></LinearLayout>
         <LinearLayout
             android:id="@+id/layout7"
-            android:layout_width="wrap_content"
+            android:layout_width="56dp"
             android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:orientation="vertical"></LinearLayout>
+            android:orientation="vertical"
+            android:weightSum="24"></LinearLayout>
         <LinearLayout
             android:id="@+id/layout8"
-            android:layout_width="wrap_content"
+            android:layout_width="56dp"
             android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:orientation="vertical"></LinearLayout>
+            android:orientation="vertical"
+            android:weightSum="24"></LinearLayout>
     </LinearLayout>
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

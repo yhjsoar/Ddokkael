@@ -1,7 +1,6 @@
 package com.example.myapplication;
 
 import android.content.Intent;
-import android.graphics.Point;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.util.Log;
@@ -16,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,15 +22,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
-import java.util.StringTokenizer;
 
 public class CustomAdapter extends PagerAdapter {
 
@@ -43,6 +38,8 @@ public class CustomAdapter extends PagerAdapter {
     String id_list = "id_list";
     String friend = "Friend_List";
     String[] date = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
+
+    float view_height;
 
     LayoutInflater inflater;
     DatabaseReference mPostReference = FirebaseDatabase.getInstance().getReference();
@@ -63,8 +60,6 @@ public class CustomAdapter extends PagerAdapter {
 
     int year_, month_, date_, day_;
     int today_year, today_month, today_date, today_day;
-
-
 
     LinearLayout[] layout = new LinearLayout[8];
 
@@ -137,6 +132,9 @@ public class CustomAdapter extends PagerAdapter {
         } else if (position == 1) {
             view = inflater.inflate(R.layout.timetable, null);
 
+            View layoutview = (View)view.findViewById(R.id.timetable_layout);
+            view_height = layoutview.getHeight();
+
             layout[0] = (LinearLayout)view.findViewById(R.id.layout1);
             layout[1] = (LinearLayout)view.findViewById(R.id.layout2);
             layout[2] = (LinearLayout)view.findViewById(R.id.layout3);
@@ -199,47 +197,6 @@ public class CustomAdapter extends PagerAdapter {
                 layout[0].addView(textView_time);
             }
             getscheduleForTable();
-            // 일정 추가
-//            for(int i=1;i<8;i++){
-//                int dt = i-1;
-//                ArrayList<timeTable> table = timeArray[dt];
-//                for(int j=0;j<timeArray[dt].size();j++){
-//                    int dur = table.get(j).finishTime-table.get(j).startTime;
-//                    float time = (float)dur / 30f;
-//                    LinearLayout.LayoutParams scheduleParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-//                    scheduleParams.weight = time;   // 해당 일정의 시간 (30분 = 1 time)
-//                    ScheduleView schedule = new ScheduleView(view.getContext());
-//                    schedule.schedule_name.setText(table.get(j).name);
-//                    schedule.schedule_info.setText("info");
-//                    schedule.schedule_layout.setBackgroundColor(R.color.colorPrimaryDark);
-//                    schedule.setLayoutParams(scheduleParams);
-//                    layout[i].addView(schedule);
-//                }
-//            }
-//            for(int i = 1; i<8; i++){ // 일 ~ 토요일
-//                // 일정 집어 넣기 (해당 요일의 weight 총합이 = 24가 되어야함)
-//                float time = 1;
-//                LinearLayout.LayoutParams scheduleParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-//                scheduleParams.weight = time;   // 해당 일정의 시간 (30분 = 1 time)
-//                ScheduleView schedule = new ScheduleView(view.getContext());
-//                schedule.schedule_name.setText("name");
-//                schedule.schedule_info.setText("info");
-////                schedule.schedule_layout.setBackgroundColor(0xff000000+0xff0000);
-//                schedule.schedule_layout.setBackgroundColor(R.color.colorPrimaryDark);
-//                schedule.setLayoutParams(scheduleParams);
-//                layout[i].addView(schedule);
-//
-//                LinearLayout.LayoutParams scheduleParams2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-//                scheduleParams2.weight = time;   // 해당 일정의 시간 (30분 = 1 time)
-//                ScheduleView schedule2 = new ScheduleView(view.getContext());
-//                schedule2.schedule_name.setText("name2");
-//                schedule2.schedule_info.setText("info2");
-////                schedule.schedule_layout.setBackgroundColor(0xff000000+0xff0000);
-//                schedule2.schedule_layout.setBackgroundColor(R.color.colorPrimary);
-//                schedule2.setLayoutParams(scheduleParams2);
-//                layout[i].addView(schedule2);
-//            }
-
         // friends
         } else {
             view = inflater.inflate(R.layout.friends, null);
@@ -284,6 +241,18 @@ public class CustomAdapter extends PagerAdapter {
                     mainActivity.startActivityForResult(intent, 3);
                 }
             });
+
+            friends_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    // 친구 ID 알아내야함
+                    String friend = (String)parent.getAdapter().getItem(position);
+                    Intent intent = new Intent(mainActivity, FriendSchedule.class);
+                    intent.putExtra("name", friend);
+                    mainActivity.startActivity(intent);
+                }
+            });
         }
 
         container.addView(view);
@@ -317,8 +286,9 @@ public class CustomAdapter extends PagerAdapter {
                     data += " " + get.schedule;
                     schedule_list.add(data);
                 }
-                Log.d("dt", dt);
-                for(DataSnapshot postSnapshot : dataSnapshot.child(person_list).child(name).child("schedule_date").child(dt).getChildren()){
+                Log.d("dat_", date[day_]+dt);
+
+                for(DataSnapshot postSnapshot : dataSnapshot.child(person_list).child(name).child("schedule_date").child(date[day_]).child(dt).getChildren()){
                     FirebaseSchedule get = postSnapshot.getValue(FirebaseSchedule.class);
                     String data = Integer.toString(get.start_time) + ":";
                     data += get.start_min<10? "0"+Integer.toString(get.start_min): Integer.toString(get.start_min);
@@ -417,13 +387,14 @@ public class CustomAdapter extends PagerAdapter {
                         int startTime = get.start_time*60 + get.start_min;
                         int finTime = get.fin_time*60+get.fin_min;
                         String sche = get.schedule;
-                        if(i==0) timeArraySun.add(new timeTable(startTime, finTime, sche));
-                        else if(i==1) timeArrayMon.add(new timeTable(startTime, finTime, sche));
-                        else if(i==2) timeArrayTue.add(new timeTable(startTime, finTime, sche));
-                        else if(i==3) timeArrayWed.add(new timeTable(startTime, finTime, sche));
-                        else if(i==4) timeArrayThu.add(new timeTable(startTime, finTime, sche));
-                        else if(i==5) timeArrayFri.add(new timeTable(startTime, finTime, sche));
-                        else timeArraySat.add(new timeTable(startTime, finTime, sche));
+                        String info = get.schedule;
+                        if(i==0) timeArraySun.add(new timeTable(startTime, finTime, sche, info));
+                        else if(i==1) timeArrayMon.add(new timeTable(startTime, finTime, sche, info));
+                        else if(i==2) timeArrayTue.add(new timeTable(startTime, finTime, sche, info));
+                        else if(i==3) timeArrayWed.add(new timeTable(startTime, finTime, sche, info));
+                        else if(i==4) timeArrayThu.add(new timeTable(startTime, finTime, sche, info));
+                        else if(i==5) timeArrayFri.add(new timeTable(startTime, finTime, sche, info));
+                        else timeArraySat.add(new timeTable(startTime, finTime, sche, info));
                     }
                 }
 
@@ -489,18 +460,19 @@ public class CustomAdapter extends PagerAdapter {
                     }
                 }
                 for(int i=0;i<7;i++){
-                    for(DataSnapshot postSnapshot : dataSnapshot.child(person_list).child(name).child("schedule_date").child(week[i]).getChildren()){
+                    for(DataSnapshot postSnapshot : dataSnapshot.child(person_list).child(name).child("schedule_date").child(date[i]).child(week[i]).getChildren()){
                         FirebaseSchedule get = postSnapshot.getValue(FirebaseSchedule.class);
                         int startTime = get.start_time*60 + get.start_min;
                         int finTime = get.fin_time*60+get.fin_min;
                         String sche = get.schedule;
-                        if(i==0) timeArraySun.add(new timeTable(startTime, finTime, sche));
-                        else if(i==1) timeArrayMon.add(new timeTable(startTime, finTime, sche));
-                        else if(i==2) timeArrayTue.add(new timeTable(startTime, finTime, sche));
-                        else if(i==3) timeArrayWed.add(new timeTable(startTime, finTime, sche));
-                        else if(i==4) timeArrayThu.add(new timeTable(startTime, finTime, sche));
-                        else if(i==5) timeArrayFri.add(new timeTable(startTime, finTime, sche));
-                        else timeArraySat.add(new timeTable(startTime, finTime, sche));
+                        String info = get.info;
+                        if(i==0) timeArraySun.add(new timeTable(startTime, finTime, sche, info));
+                        else if(i==1) timeArrayMon.add(new timeTable(startTime, finTime, sche, info));
+                        else if(i==2) timeArrayTue.add(new timeTable(startTime, finTime, sche, info));
+                        else if(i==3) timeArrayWed.add(new timeTable(startTime, finTime, sche, info));
+                        else if(i==4) timeArrayThu.add(new timeTable(startTime, finTime, sche, info));
+                        else if(i==5) timeArrayFri.add(new timeTable(startTime, finTime, sche, info));
+                        else timeArraySat.add(new timeTable(startTime, finTime, sche, info));
                     }
                 }
                 for(int i=0;i<7;i++){
@@ -553,7 +525,7 @@ public class CustomAdapter extends PagerAdapter {
                         scheduleParams.weight = time;   // 해당 일정의 시간 (30분 = 1 time)
                         ScheduleView schedule = new ScheduleView(view.getContext());
                         schedule.schedule_name.setText(table.get(j).name);
-                        schedule.schedule_info.setText("info");
+                        schedule.schedule_info.setText(table.get(j).info);
                         schedule.schedule_layout.setBackgroundColor(R.color.colorPrimaryDark);
                         schedule.setLayoutParams(scheduleParams);
                         layout[i].addView(schedule);
@@ -590,6 +562,7 @@ public class CustomAdapter extends PagerAdapter {
         int startTime;
         int finishTime;
         String name;
+        String info;
 
         public timeTable(){
             startTime = 0;
@@ -597,10 +570,11 @@ public class CustomAdapter extends PagerAdapter {
             name = "";
         }
 
-        public timeTable(int startTime, int finishTime, String name){
+        public timeTable(int startTime, int finishTime, String name, String info){
             this.startTime = startTime;
             this.finishTime = finishTime;
             this.name = name;
+            this.info = info;
         }
     }
     class AscendingObj implements Comparator<timeTable> {

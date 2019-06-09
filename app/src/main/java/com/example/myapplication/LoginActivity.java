@@ -1,11 +1,14 @@
 package com.example.myapplication;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -20,22 +23,48 @@ public class LoginActivity extends AppCompatActivity {
     EditText edit_ID, edit_PW;
     String id, pw;
 
+    Intent intent;
+
+    CheckBox idCheck, loginCheck;
+
     private DatabaseReference mPostReference;
+
+    SharedPreferences loginPref;
+    SharedPreferences.Editor editor;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        intent = new Intent(LoginActivity.this, JoininActivity.class);
 
         mPostReference = FirebaseDatabase.getInstance().getReference();
 
         login = (Button)findViewById(R.id.button_login);
         joinin = (Button)findViewById(R.id.button_joinin);
 
-        // 기존에 로그인한 경우 바로 MainActivity로 intent
+        idCheck = (CheckBox)findViewById(R.id.idSave);
+        loginCheck = (CheckBox)findViewById(R.id.maintainLogin);
 
+        // 기존에 로그인한 경우 바로 MainActivity로 intent
+        loginPref = this.getPreferences(Context.MODE_PRIVATE);
+        editor = loginPref.edit();
 
         edit_ID = (EditText)findViewById(R.id.editText_id);
         edit_PW = (EditText)findViewById(R.id.editText_pw);
+
+        String defaultValue = loginPref.getString("pw", null);
+        String defaultValue2 = loginPref.getString("id", null);
+        if(defaultValue2!=null && defaultValue!=null){
+            intent.putExtra("ID", defaultValue2);
+            startActivity(intent);
+            finish();
+        } else if(defaultValue2 != null){
+            edit_ID.setText(defaultValue2);
+            idCheck.setChecked(true);
+        }
+
+
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,7 +81,6 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // firebase에 유저 등록 후 MainActivity로 intent
-                Intent intent = new Intent(LoginActivity.this, JoininActivity.class);
                 intent.putExtra("data", "Test popup");
                 startActivityForResult(intent, 1);
             }
@@ -94,8 +122,17 @@ public class LoginActivity extends AppCompatActivity {
                 if(isRight){
                     // 정상적으로 로그인 된 경우 MainActivity로 intent
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    if(loginCheck.isChecked()){
+                        editor.putString("id", id);
+                        editor.putString("pw", pw);
+                        editor.commit();
+                    } else if(idCheck.isChecked()){
+                        editor.putString("id", id);
+                        editor.commit();
+                    }
                     intent.putExtra("ID", id);
                     startActivity(intent);
+                    finish();
                 } else{
                     Toast.makeText(LoginActivity.this, "로그인에 실패하셨습니다", Toast.LENGTH_SHORT).show();
                 }
