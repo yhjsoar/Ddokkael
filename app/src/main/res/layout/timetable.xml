@@ -68,43 +68,36 @@
             android:id="@+id/layout2"
             android:layout_width="56dp"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:weightSum="24"></LinearLayout>
+            android:orientation="vertical"></LinearLayout>
         <LinearLayout
             android:id="@+id/layout3"
             android:layout_width="56dp"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:weightSum="24"></LinearLayout>
+            android:orientation="vertical"></LinearLayout>
         <LinearLayout
             android:id="@+id/layout4"
             android:layout_width="56dp"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:weightSum="24"></LinearLayout>
+            android:orientation="vertical"></LinearLayout>
         <LinearLayout
             android:id="@+id/layout5"
             android:layout_width="56dp"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:weightSum="24"></LinearLayout>
+            android:orientation="vertical"></LinearLayout>
         <LinearLayout
             android:id="@+id/layout6"
             android:layout_width="56dp"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:weightSum="24"></LinearLayout>
+            android:orientation="vertical"></LinearLayout>
         <LinearLayout
             android:id="@+id/layout7"
             android:layout_width="56dp"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:weightSum="24"></LinearLayout>
+            android:orientation="vertical"></LinearLayout>
         <LinearLayout
             android:id="@+id/layout8"
             android:layout_width="56dp"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:weightSum="24"></LinearLayout>
+            android:orientation="vertical"></LinearLayout>
     </LinearLayout>
 </LinearLayout>

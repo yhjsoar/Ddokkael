@@ -481,7 +481,7 @@ public class CustomAdapter extends PagerAdapter {
                             time = (float)dur / 30f;
                             sum_time += time;
                             Log.d("time", Float.toString(time));
-                            LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                            LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
                             scheduleParams1.weight = time;
                             ScheduleView schedule2 = new ScheduleView(view.getContext());
                             schedule2.schedule_name.setText("");
@@ -493,7 +493,7 @@ public class CustomAdapter extends PagerAdapter {
                         dur = table.get(j).finishTime-table.get(j).startTime;
                         time = (float)dur / 30f;
                         sum_time += time;
-                        LinearLayout.LayoutParams scheduleParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        LinearLayout.LayoutParams scheduleParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
                         scheduleParams.weight = time;   // 해당 일정의 시간 (30분 = 1 time)
                         ScheduleView schedule = new ScheduleView(view.getContext());
                         schedule.schedule_name.setText(table.get(j).name);
@@ -510,7 +510,7 @@ public class CustomAdapter extends PagerAdapter {
                         float time = (float)dur / 30f;
                         sum_time += time;
                         Log.d("time", Float.toString(time));
-                        LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
                         scheduleParams1.weight = time;
                         ScheduleView schedule2 = new ScheduleView(view.getContext());
                         schedule2.schedule_name.setText("");
