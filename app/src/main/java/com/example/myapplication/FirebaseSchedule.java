@@ -28,7 +28,7 @@ public class FirebaseSchedule {
     public Map<String, Object> toMap(){
         HashMap<String, Object> result = new HashMap<>();
         result.put("schedule", schedule);
-        result.put("info", schedule);
+        result.put("info", info);
         result.put("start_time", start_time);
         result.put("start_min", start_min);
         result.put("fin_time", fin_time);

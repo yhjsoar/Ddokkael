@@ -277,24 +277,25 @@ public class CustomAdapter extends PagerAdapter {
                 if(!dataSnapshot.child(person_list).child(name).exists()){
                     return;
                 }
+                AscendingObj ascending = new AscendingObj();
+                ArrayList<timeTable> calTable = new ArrayList<timeTable>();
                 for(DataSnapshot postSnapshot : dataSnapshot.child(person_list).child(name).child(schedule).child(date[day_]).getChildren()){
                     FirebaseSchedule get = postSnapshot.getValue(FirebaseSchedule.class);
-                    String data = Integer.toString(get.start_time) + ":";
-                    data += get.start_min<10? "0"+Integer.toString(get.start_min): Integer.toString(get.start_min);
-                    data += "~"+Integer.toString(get.fin_time) + ":";
-                    data += get.fin_min<10? "0"+Integer.toString(get.fin_min) : Integer.toString(get.fin_min);
-                    data += " " + get.schedule;
-                    schedule_list.add(data);
+                    calTable.add(new timeTable(get.start_time, get.start_min, get.fin_time, get.fin_min, get.schedule, get.info));
                 }
                 Log.d("dat_", date[day_]+dt);
 
                 for(DataSnapshot postSnapshot : dataSnapshot.child(person_list).child(name).child("schedule_date").child(date[day_]).child(dt).getChildren()){
                     FirebaseSchedule get = postSnapshot.getValue(FirebaseSchedule.class);
-                    String data = Integer.toString(get.start_time) + ":";
-                    data += get.start_min<10? "0"+Integer.toString(get.start_min): Integer.toString(get.start_min);
-                    data += "~"+Integer.toString(get.fin_time) + ":";
-                    data += get.fin_min<10? "0"+Integer.toString(get.fin_min) : Integer.toString(get.fin_min);
-                    data += " " + get.schedule;
+                    calTable.add(new timeTable(get.start_time, get.start_min, get.fin_time, get.fin_min, get.schedule, get.info));
+                }
+                Collections.sort(calTable, ascending);
+                for(timeTable get : calTable){
+                    String data = Integer.toString(get.sTime) + ":";
+                    data += get.sMin<10? "0"+Integer.toString(get.sMin): Integer.toString(get.sMin);
+                    data += "~"+Integer.toString(get.fTime) + ":";
+                    data += get.fMin<10? "0"+Integer.toString(get.fMin) : Integer.toString(get.fMin);
+                    data += " " + get.name;
                     schedule_list.add(data);
                 }
                 adapterCal.notifyDataSetChanged();
@@ -563,11 +564,28 @@ public class CustomAdapter extends PagerAdapter {
         int finishTime;
         String name;
         String info;
+        int sTime, sMin;
+        int fTime, fMin;
 
         public timeTable(){
             startTime = 0;
             finishTime = 0;
             name = "";
+            sTime = 0;
+            sMin = 0;
+            fTime = 0;
+            fMin = 0;
+        }
+
+        public timeTable(int sTime, int sMin, int fTime, int fMin, String name, String info){
+            this.sTime = sTime;
+            this.sMin = sMin;
+            this.fTime = fTime;
+            this.fMin = fMin;
+            this.name = name;
+            this.info = info;
+            startTime = sTime*60+sMin;
+            finishTime = fTime*60+fMin;
         }
 
         public timeTable(int startTime, int finishTime, String name, String info){
@@ -575,6 +593,10 @@ public class CustomAdapter extends PagerAdapter {
             this.finishTime = finishTime;
             this.name = name;
             this.info = info;
+            sTime = 0;
+            sMin = 0;
+            fTime = 0;
+            fMin = 0;
         }
     }
     class AscendingObj implements Comparator<timeTable> {
