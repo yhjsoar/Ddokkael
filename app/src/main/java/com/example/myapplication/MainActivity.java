@@ -20,6 +20,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -254,7 +255,11 @@ public class MainActivity extends AppCompatActivity {
             MyAsyncTask mProcessTask = new MyAsyncTask();
             try{
                 item = mProcessTask.execute().get();
+                if(item!=null) {
+                    Log.d("weather", item.weather.get(0).main);
+                }
             } catch(Exception e){
+                layout.setBackgroundResource(R.drawable.clear);
                 e.printStackTrace();
             }
         }

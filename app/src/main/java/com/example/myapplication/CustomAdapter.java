@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -72,7 +73,9 @@ public class CustomAdapter extends PagerAdapter {
 
     MainActivity mainActivity;
 
-    TextView fromText, toText, weatherText;
+    TextView fromText, toText;
+
+    AppCompatImageView weatherImage;
 
     LinearLayout linearLayout;
 
@@ -108,7 +111,7 @@ public class CustomAdapter extends PagerAdapter {
             final ListView calendar_list = (ListView)view.findViewById(R.id.calendar_list);
             schedule_list = new ArrayList<String>();
             linearLayout = (LinearLayout)view.findViewById(R.id.calender_back);
-            weatherText = (TextView)view.findViewById(R.id.weather);
+            weatherImage = (AppCompatImageView) view.findViewById(R.id.weather);
 
             // 오늘의 일정 정보(Default 값)
 
@@ -127,31 +130,46 @@ public class CustomAdapter extends PagerAdapter {
             item = mainActivity.getWeather();
             if(item!=null){
                 Log.d("weather", item.weather.get(0).main);
+                weatherImage.setVisibility(View.VISIBLE);
                 if(item.weather.get(0).main.equals("Thunderstorm")){
                     linearLayout.setBackgroundResource(R.drawable.thunderstorm);
+                    weatherImage.setImageResource(R.drawable.ic_thunderstorm);
                 } else if (item.weather.get(0).main.equals("Drizzle")) {
                     linearLayout.setBackgroundResource(R.drawable.drizzle);
+                    weatherImage.setImageResource(R.drawable.ic_drizzle);
                 } else if (item.weather.get(0).main.equals("Rain")) {
                     linearLayout.setBackgroundResource(R.drawable.rain);
+                    weatherImage.setImageResource(R.drawable.ic_rain);
                 } else if (item.weather.get(0).main.equals("Snow")) {
                     linearLayout.setBackgroundResource(R.drawable.snow);
+                    weatherImage.setImageResource(R.drawable.ic_snow);
                 } else if (item.weather.get(0).main.equals("Mist") || item.weather.get(0).main.equals("Smoke") || item.weather.get(0).main.equals("Haze") || item.weather.get(0).main.equals("Fog")) {
                     linearLayout.setBackgroundResource(R.drawable.haze);
+                    weatherImage.setImageResource(R.drawable.ic_fog);
                 } else if (item.weather.get(0).main.equals("Dust")) {
                     linearLayout.setBackgroundResource(R.drawable.dust);
+                    weatherImage.setImageResource(R.drawable.ic_dust);
                 } else if (item.weather.get(0).main.equals("Sand")) {
+                    weatherImage.setImageResource(R.drawable.ic_sand);
                     linearLayout.setBackgroundResource(R.drawable.sand);
                 } else if (item.weather.get(0).main.equals("Ash")) {
                     linearLayout.setBackgroundResource(R.drawable.ash);
+                    weatherImage.setImageResource(R.drawable.ic_ash);
                 } else if (item.weather.get(0).main.equals("Squall")) {
                     linearLayout.setBackgroundResource(R.drawable.squall);
+                    weatherImage.setImageResource(R.drawable.ic_squall);
                 } else if (item.weather.get(0).main.equals("Tornado")) {
                     linearLayout.setBackgroundResource(R.drawable.tornado);
+                    weatherImage.setImageResource(R.drawable.ic_tornado);
                 } else if (item.weather.get(0).main.equals("Clouds")) {
                     linearLayout.setBackgroundResource(R.drawable.clouds);
+                    weatherImage.setImageResource(R.drawable.ic_clouds);
                 } else{
                     linearLayout.setBackgroundResource(R.drawable.clear);
+                    weatherImage.setImageResource(R.drawable.ic_clear);
                 }
+            } else{
+                weatherImage.setVisibility(View.GONE);
             }
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", java.util.Locale.getDefault());
@@ -176,13 +194,12 @@ public class CustomAdapter extends PagerAdapter {
                     day_ = getDay(year, month, dayOfMonth);
                     dt = getStringdate();
 
-                    if(year_==today_year && month_ == today_month && date_==today_date){
-                        item = mainActivity.getWeather();
-                        if(item!=null){
-                            weatherText.setText(item.weather.get(0).main);
-                        }
-                    } else weatherText.setText("");
 
+                    if(year_==today_year && month_ == today_month && date_==today_date){
+                        weatherImage.setVisibility(View.VISIBLE);
+                    } else {
+                        weatherImage.setVisibility(View.GONE);
+                    }
                     calendar_text.setText("   "+year+"/"+(month+1)+"/"+dayOfMonth);
 
                     getschedule();
