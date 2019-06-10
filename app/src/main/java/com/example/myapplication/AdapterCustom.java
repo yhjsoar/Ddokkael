@@ -105,11 +105,6 @@ public class AdapterCustom extends PagerAdapter {
             date_ = date.getDate(); // 날짜
             day_ = date.getDay(); // 요일
 
-            today_year = year_+1900;
-            today_month = month_+1;
-            today_date = date_;
-            today_day =day_;
-
             item = mainActivity.getWeather();
             if(item!=null){
                 Log.d("weather", item.weather.get(0).main);
@@ -461,6 +456,12 @@ public class AdapterCustom extends PagerAdapter {
                 int[] mt_dt2 = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
                 //date : 날짜, day : 요일
+                long now = System.currentTimeMillis();
+                Date dd  = new Date(now);
+                today_year = dd.getYear()+1900;
+                today_month = dd.getMonth()+1;
+                today_date = dd.getDate();
+                today_day =dd.getDay();
 
                 if(today_day+1>today_date){
                     int first_day = today_day + 1 - today_date;
@@ -592,6 +593,7 @@ public class AdapterCustom extends PagerAdapter {
                                 weightArray[0] = weightTmp;
                                 weightTmp = (float) last - (float) finishLine * 60f;
                                 weightTmp = weightTmp / 30f;
+
                                 weightArray[2 * finishLine - 2 * startLine + 2] = weightTmp - 0.02f;
                                 for (int tmp = 1; tmp < 2 * finishLine - 2 * startLine + 2; tmp++) {
                                     if (tmp % 2 == 1) weightArray[tmp] = 0.02f;

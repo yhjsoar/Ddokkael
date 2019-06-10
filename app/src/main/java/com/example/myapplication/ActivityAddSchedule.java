@@ -44,6 +44,8 @@ public class ActivityAddSchedule extends Activity {
     String[] day_list = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
     String dy="";
 
+    Boolean isAsked = false;
+
     DatabaseReference mPostReference;
 
     DataFirebaseSchedule addingSchedule;
@@ -81,7 +83,7 @@ public class ActivityAddSchedule extends Activity {
         Intent intent = getIntent();
         name = intent.getStringExtra("name");
 
-        cb = new DataClipBoard();
+        if(!isAsked){cb = new DataClipBoard();
         try{
             cb.cm = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
             cb.initialize();
@@ -89,10 +91,11 @@ public class ActivityAddSchedule extends Activity {
             if(cb.isExist){
                 Intent intent2 = new Intent(ActivityAddSchedule.this, PopUpClipboard.class);
                 startActivityForResult(intent2, 2);
+                isAsked = true;
             }
         } catch (Exception e){
             e.printStackTrace();
-        }
+        }}
 
         sw.setOnClickListener(new View.OnClickListener() {
             @Override

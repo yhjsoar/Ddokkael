@@ -17,7 +17,7 @@ public class PopUpDaySelect extends Activity {
         super.onCreate(savedInstanceState);
         //타이틀바 없애기
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.select_day);
+        setContentView(R.layout.popup_select_day);
 
         //UI 객체생성
         textSun = (TextView)findViewById(R.id.textSun);

@@ -1,17 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
 
     <LinearLayout
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="일정 추가"
+            android:textSize="20dp"
+            android:textColor="#555"
+            android:gravity="center"
+            android:background="#c4ced9" />
 
         <TextView
             android:id="@+id/textSun"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
             android:gravity="center"
             android:background="@drawable/white_edge"
             android:text="일요일"
@@ -19,7 +28,7 @@
         <TextView
             android:id="@+id/textMon"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
             android:gravity="center"
             android:background="@drawable/white_edge"
             android:text="월요일"
@@ -27,7 +36,7 @@
         <TextView
             android:id="@+id/textThu"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
             android:gravity="center"
             android:background="@drawable/white_edge"
             android:text="화요일"
@@ -35,7 +44,7 @@
         <TextView
             android:id="@+id/textWed"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
             android:gravity="center"
             android:background="@drawable/white_edge"
             android:text="수요일"
@@ -43,7 +52,7 @@
         <TextView
             android:id="@+id/textThur"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
             android:gravity="center"
             android:background="@drawable/white_edge"
             android:text="목요일"
@@ -51,7 +60,7 @@
         <TextView
             android:id="@+id/textFri"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
             android:gravity="center"
             android:background="@drawable/white_edge"
             android:text="금요일"
@@ -59,7 +68,7 @@
         <TextView
             android:id="@+id/textSat"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
             android:gravity="center"
             android:background="@drawable/white_edge"
             android:text="토요일"
@@ -67,7 +76,7 @@
         <TextView
             android:id="@+id/textCancel"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
             android:gravity="center"
             android:background="@drawable/white_edge"
             android:text="취소"
