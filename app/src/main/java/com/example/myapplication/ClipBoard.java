@@ -66,7 +66,7 @@ public class ClipBoard {
                     }
                     String hr = first+second;
                     hour = Integer.parseInt(hr);
-                    if(hour>=12){
+                    if(hour>12){
                         hour -= 12;
                         apm = 1;
                     }

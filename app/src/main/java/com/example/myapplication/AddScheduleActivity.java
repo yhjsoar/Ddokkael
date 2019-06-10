@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -52,6 +53,8 @@ public class AddScheduleActivity extends Activity {
 
     int fst = 0;
 
+    ClipBoard cb;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +83,19 @@ public class AddScheduleActivity extends Activity {
         //데이터 가져오기
         Intent intent = getIntent();
         name = intent.getStringExtra("name");
+
+        cb = new ClipBoard();
+        try{
+            cb.cm = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
+            cb.initialize();
+            cb.searchDatafromClipBoard();
+            if(cb.isExist){
+                Intent intent2 = new Intent(AddScheduleActivity.this, PopUpClipboard.class);
+                startActivityForResult(intent2, 2);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
         sw.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,7 +141,7 @@ public class AddScheduleActivity extends Activity {
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activity_end();
+                activity_end(false);
             }
         });
 
@@ -208,7 +224,7 @@ public class AddScheduleActivity extends Activity {
         mPostReference.updateChildren(childUpdates);
         Toast.makeText(AddScheduleActivity.this, addingSchedule.schedule, Toast.LENGTH_SHORT).show();
 
-        activity_end();
+        activity_end(true);
     }
 
     public void check(){
@@ -336,10 +352,11 @@ public class AddScheduleActivity extends Activity {
         return day_of_week-1;
     }
 
-    public void activity_end(){
+    public void activity_end(boolean isYes){
         Intent intent = new Intent();
         intent.putExtra("button",1);
-        setResult(RESULT_OK, intent);
+        if(isYes)   setResult(RESULT_OK, intent);
+        else setResult(RESULT_CANCELED, intent);
 
         finish();
     }
@@ -351,6 +368,16 @@ public class AddScheduleActivity extends Activity {
                 day = data.getExtras().getString("day");
                 schedule_date = (TextView)findViewById(R.id.setDateTextView);
                 schedule_date.setText(day);
+            }
+        }
+        else if(requestCode == 2){
+            if(resultCode==RESULT_OK){
+                sTime = cb.hour;
+                if(cb.apm==1) sTime = sTime + 12;
+                sMin = cb.minute;
+                schedule_name.setText(cb.schedule);
+                startTime = String.format("%d:%d",sTime, sMin);
+                schedule_start.setText(startTime);
             }
         }
     }

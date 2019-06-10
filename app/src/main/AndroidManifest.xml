@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.myapplication">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,9 +12,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".PopUpFriend"
-            android:theme="@android:style/Theme.Dialog" ></activity>
-        <activity android:name=".PopUpDaySelect"
+        <activity android:name=".PopUpClipboard"
+            android:theme="@android:style/Theme.Dialog"></activity>
+        <activity
+            android:name=".DeleteFriend"
+            android:theme="@android:style/Theme.Dialog" />
+        <activity
+            android:name=".CancelFriendRequest"
+            android:theme="@android:style/Theme.Dialog" />
+        <activity
+            android:name=".PopUpDelete"
+            android:theme="@android:style/Theme.Dialog" />
+        <activity
+            android:name=".PopUpFriend"
+            android:theme="@android:style/Theme.Dialog" />
+        <activity
+            android:name=".PopUpDaySelect"
             android:theme="@android:style/Theme.Dialog" />
         <activity
             android:name=".FriendSchedule"

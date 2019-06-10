@@ -1,7 +1,17 @@
 package com.example.myapplication;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 import android.view.Gravity;
@@ -16,11 +26,16 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.common.api.Response;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,6 +43,9 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
 
 public class CustomAdapter extends PagerAdapter {
 
@@ -54,12 +72,16 @@ public class CustomAdapter extends PagerAdapter {
 
     MainActivity mainActivity;
 
-    TextView fromText, toText;
+    TextView fromText, toText, weatherText;
+
+    LinearLayout linearLayout;
 
     String dt;
 
     int year_, month_, date_, day_;
     int today_year, today_month, today_date, today_day;
+
+    WeatherItem item;
 
     LinearLayout[] layout = new LinearLayout[8];
 
@@ -85,6 +107,8 @@ public class CustomAdapter extends PagerAdapter {
             final TextView calendar_text = (TextView)view.findViewById(R.id.calendar_text);
             final ListView calendar_list = (ListView)view.findViewById(R.id.calendar_list);
             schedule_list = new ArrayList<String>();
+            linearLayout = (LinearLayout)view.findViewById(R.id.calender_back);
+            weatherText = (TextView)view.findViewById(R.id.weather);
 
             // 오늘의 일정 정보(Default 값)
 
@@ -99,6 +123,36 @@ public class CustomAdapter extends PagerAdapter {
             today_month = month_+1;
             today_date = date_;
             today_day =day_;
+
+            item = mainActivity.getWeather();
+            if(item!=null){
+                Log.d("weather", item.weather.get(0).main);
+                if(item.weather.get(0).main.equals("Thunderstorm")){
+                    linearLayout.setBackgroundResource(R.drawable.thunderstorm);
+                } else if (item.weather.get(0).main.equals("Drizzle")) {
+                    linearLayout.setBackgroundResource(R.drawable.drizzle);
+                } else if (item.weather.get(0).main.equals("Rain")) {
+                    linearLayout.setBackgroundResource(R.drawable.rain);
+                } else if (item.weather.get(0).main.equals("Snow")) {
+                    linearLayout.setBackgroundResource(R.drawable.snow);
+                } else if (item.weather.get(0).main.equals("Mist") || item.weather.get(0).main.equals("Smoke") || item.weather.get(0).main.equals("Haze") || item.weather.get(0).main.equals("Fog")) {
+                    linearLayout.setBackgroundResource(R.drawable.haze);
+                } else if (item.weather.get(0).main.equals("Dust")) {
+                    linearLayout.setBackgroundResource(R.drawable.dust);
+                } else if (item.weather.get(0).main.equals("Sand")) {
+                    linearLayout.setBackgroundResource(R.drawable.sand);
+                } else if (item.weather.get(0).main.equals("Ash")) {
+                    linearLayout.setBackgroundResource(R.drawable.ash);
+                } else if (item.weather.get(0).main.equals("Squall")) {
+                    linearLayout.setBackgroundResource(R.drawable.squall);
+                } else if (item.weather.get(0).main.equals("Tornado")) {
+                    linearLayout.setBackgroundResource(R.drawable.tornado);
+                } else if (item.weather.get(0).main.equals("Clouds")) {
+                    linearLayout.setBackgroundResource(R.drawable.clouds);
+                } else{
+                    linearLayout.setBackgroundResource(R.drawable.clear);
+                }
+            }
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", java.util.Locale.getDefault());
             Date dat = new Date();
@@ -122,9 +176,28 @@ public class CustomAdapter extends PagerAdapter {
                     day_ = getDay(year, month, dayOfMonth);
                     dt = getStringdate();
 
+                    if(year_==today_year && month_ == today_month && date_==today_date){
+                        item = mainActivity.getWeather();
+                        if(item!=null){
+                            weatherText.setText(item.weather.get(0).main);
+                        }
+                    } else weatherText.setText("");
+
                     calendar_text.setText("   "+year+"/"+(month+1)+"/"+dayOfMonth);
 
                     getschedule();
+                }
+            });
+
+            calendar_list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(view.getContext(), PopUpDelete.class);
+                    intent.putExtra("data", (String)parent.getAdapter().getItem(position));
+                    intent.putExtra("date", calendar_text.getText().toString());
+                    intent.putExtra("name", name);
+                    mainActivity.startActivity(intent);
+                    return false;
                 }
             });
 
@@ -201,14 +274,35 @@ public class CustomAdapter extends PagerAdapter {
                 }
             });
 
-            friends_list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            friends_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
-                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Intent intent = new Intent(view.getContext(), PopUpFriend.class);
                     intent.putExtra("name", (String)parent.getAdapter().getItem(position));
                     intent.putExtra("myname", name);
                     mainActivity.startActivity(intent);
-                    return false;
+                }
+            });
+
+            friends_list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(view.getContext(), DeleteFriend.class);
+                    intent.putExtra("name", (String)parent.getAdapter().getItem(position));
+                    intent.putExtra("myname", name);
+                    mainActivity.startActivity(intent);
+                    return true;
+                }
+            });
+
+            friend_to.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(view.getContext(), CancelFriendRequest.class);
+                    intent.putExtra("name", (String)parent.getAdapter().getItem(position));
+                    intent.putExtra("myname", name);
+                    mainActivity.startActivity(intent);
+                    return true;
                 }
             });
         }
@@ -482,11 +576,9 @@ public class CustomAdapter extends PagerAdapter {
                             schedule2.setLayoutParams(scheduleParams1);
                             layout[i].addView(schedule2);
                         }
-                        Log.d("스케줄, sum time1", table.get(j).name+"&"+Float.toString(sum_time));
                         dur = table.get(j).finishTime-table.get(j).startTime;
                         time = (float)dur / 30f;
                         sum_time += time;
-                        Log.d("스케줄, sum time2", table.get(j).name+"&"+Float.toString(sum_time));
                         LinearLayout.LayoutParams scheduleParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,0);
                         scheduleParams.weight = time;   // 해당 일정의 시간 (30분 = 1 time)
                         ScheduleView schedule = new ScheduleView(view.getContext());
@@ -575,4 +667,6 @@ public class CustomAdapter extends PagerAdapter {
         }
 
     }
+
+
 }

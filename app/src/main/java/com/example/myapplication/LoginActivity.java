@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -37,6 +38,10 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         intent = new Intent(LoginActivity.this, MainActivity.class);
+        Intent intent2 = getIntent();
+        String isLogout = "";
+        if(intent2!=null) isLogout = intent2.getStringExtra("logout");
+
 
         mPostReference = FirebaseDatabase.getInstance().getReference();
 
@@ -49,6 +54,17 @@ public class LoginActivity extends AppCompatActivity {
         // 기존에 로그인한 경우 바로 MainActivity로 intent
         loginPref = this.getPreferences(Context.MODE_PRIVATE);
         editor = loginPref.edit();
+
+        if(isLogout != null && !isLogout.equals("")){
+            Log.d("asdasd", "asdasdasd");
+            String defaultValue = loginPref.getString("pw", null);
+            String defaultValue2 = loginPref.getString("id", null);
+            editor.clear();
+            if(defaultValue==null && defaultValue2 != null){
+                editor.putString("id", defaultValue2);
+            }
+            editor.commit();
+        }
 
         edit_ID = (EditText)findViewById(R.id.editText_id);
         edit_PW = (EditText)findViewById(R.id.editText_pw);
@@ -128,6 +144,7 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putString("pw", pw);
                         editor.commit();
                     } else if(idCheck.isChecked()){
+                        editor.clear();
                         editor.putString("id", id);
                         editor.commit();
                     }

@@ -24,7 +24,6 @@ public class PopUpFriend extends Activity {
         //UI 객체생성
         friend_schedule = (TextView)findViewById(R.id.friend_schedule);
         friend_compare = (TextView)findViewById(R.id.friend_compare);
-        friend_delete = (TextView)findViewById(R.id.friend_delete);
         cancel = (TextView)findViewById(R.id.friend_cancel);
 
         Intent intent = getIntent();
@@ -48,21 +47,11 @@ public class PopUpFriend extends Activity {
             public void onClick(View v) {
                 Intent intent = new Intent(PopUpFriend.this, FriendSchedule.class);
                 intent.putExtra("mode", "compare");
-                intent.putExtra("name1", name);
-                intent.putExtra("name2", myname);
+                intent.putExtra("name2", name);
+                intent.putExtra("name1", myname);
                 startActivity(intent);
 
                 finish();
-            }
-        });
-
-        friend_delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 친구 삭제
-
-                finish();
-
             }
         });
 
