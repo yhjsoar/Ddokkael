@@ -64,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
 
     int today_year, today_month, today_date;
 
+    private BackKeyClickHandler backKeyClickHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         name = intent.getStringExtra("ID");
+
+        backKeyClickHandler = new BackKeyClickHandler(this);
 
         // Contents
         myToolbar = (Toolbar)findViewById(R.id.my_toolbar);
@@ -171,6 +175,12 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+        backKeyClickHandler.onBackPressed();
     }
 
     final LocationListener networkLocationListener = new LocationListener() {
