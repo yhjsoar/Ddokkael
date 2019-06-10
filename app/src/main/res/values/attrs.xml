@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="ScheduleView">
+    <declare-styleable name="ViewSchedule">
         <attr name="name" format="reference|string" />
         <attr name="info" format="reference|string" />
         <attr name="backgroundColor" format="reference|integer" />

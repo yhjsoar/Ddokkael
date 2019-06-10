@@ -2,14 +2,11 @@ package com.example.myapplication;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.media.Image;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
-import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -22,12 +19,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
-
 import java.util.HashMap;
 import java.util.Map;
 
-public class AddFriend extends Activity {
+public class ActivityAddFriend extends Activity {
     private DatabaseReference mPostReference;
 
     EditText editText;
@@ -42,7 +37,7 @@ public class AddFriend extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_add_friend);
+        setContentView(R.layout.popup_add_friend);
 
         Intent intent = getIntent();
         name = intent.getStringExtra("name");
@@ -69,7 +64,7 @@ public class AddFriend extends Activity {
             public void onClick(View v) {
                 id = editText.getText().toString();
                 if(id.length()==0){
-                    Toast.makeText(AddFriend.this, "바르게 입력해주세요.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ActivityAddFriend.this, "바르게 입력해주세요.", Toast.LENGTH_LONG).show();
                     return;
                 }
                 if (id.equals(name)) {
@@ -97,7 +92,7 @@ public class AddFriend extends Activity {
                 if(check_case == 0){
                     boolean isExist = false, isFriend = false;
                     for (DataSnapshot postSnapshot : dataSnapshot.child(getString(R.string.id)).getChildren()) {
-                        FirebaseID get = postSnapshot.getValue(FirebaseID.class);
+                        DataFirebaseID get = postSnapshot.getValue(DataFirebaseID.class);
                         if (get.id.equals(id)) {
                             isExist = true;
                             break;
@@ -105,7 +100,7 @@ public class AddFriend extends Activity {
                     }
                     if (isExist) {
                         for (DataSnapshot postSnapshot : dataSnapshot.child(getString(R.string.person)).child(name).child(getString(R.string.friend)).getChildren()) {
-                            FirebaseFriend get = postSnapshot.getValue(FirebaseFriend.class);
+                            DataFirebaseFriend get = postSnapshot.getValue(DataFirebaseFriend.class);
                             if (get.name.equals(id)) {
                                 isFriend = true;
                                 break;
@@ -126,7 +121,7 @@ public class AddFriend extends Activity {
                 else if(check_case==1){
                     boolean isRequestedto = false, isRequestedfrom = false;
                     for(DataSnapshot postSnapshot : dataSnapshot.child(getString(R.string.request)).child(name).child("from").getChildren()){
-                        FirebaseFriend get = postSnapshot.getValue(FirebaseFriend.class);
+                        DataFirebaseFriend get = postSnapshot.getValue(DataFirebaseFriend.class);
                         if(get.name.equals(id)){
                             isRequestedfrom = true;
                             postSnapshot.getRef().removeValue();
@@ -135,7 +130,7 @@ public class AddFriend extends Activity {
                     }
                     if(isRequestedfrom){
                         for(DataSnapshot postSnapshot : dataSnapshot.child(getString(R.string.request)).child(id).child("to").getChildren()){
-                            FirebaseFriend get = postSnapshot.getValue(FirebaseFriend.class);
+                            DataFirebaseFriend get = postSnapshot.getValue(DataFirebaseFriend.class);
                             if(get.name.equals(name)){
                                 postSnapshot.getRef().removeValue();
                                 break;
@@ -145,14 +140,14 @@ public class AddFriend extends Activity {
                         end();
                     } else{
                         for(DataSnapshot post : dataSnapshot.child(getString(R.string.request)).child(name).child("to").getChildren()){
-                            FirebaseFriend get = post.getValue(FirebaseFriend.class);
+                            DataFirebaseFriend get = post.getValue(DataFirebaseFriend.class);
                             if(get.name.equals(id)){
                                 isRequestedto = true;
                                 break;
                             }
                         }
                         if(isRequestedto){
-                            Toast.makeText(AddFriend.this, "이미 요청을 보냈습니다.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ActivityAddFriend.this, "이미 요청을 보냈습니다.", Toast.LENGTH_SHORT).show();
                         } else{
                             postFirebaseDatabase(0);
                             end();
@@ -174,16 +169,16 @@ public class AddFriend extends Activity {
         String toastms = "";
 
         if(pushing_case==0){
-            FirebaseFriend from = new FirebaseFriend(name);
-            FirebaseFriend to = new FirebaseFriend(id);
+            DataFirebaseFriend from = new DataFirebaseFriend(name);
+            DataFirebaseFriend to = new DataFirebaseFriend(id);
             postValues = from.toMap();
             postValues2 = to.toMap();
             childUpdates.put("/list/"+getString(R.string.request) +"/"+name+"/to/"+id, postValues2);
             childUpdates.put("/list/"+getString(R.string.request)+"/"+id+"/from/"+name, postValues);
             toastms= "친구 요청을 보냈습니다.";
         } else if(pushing_case == 1){
-            FirebaseFriend me = new FirebaseFriend(id);
-            FirebaseFriend fr = new FirebaseFriend(name);
+            DataFirebaseFriend me = new DataFirebaseFriend(id);
+            DataFirebaseFriend fr = new DataFirebaseFriend(name);
             postValues = me.toMap();
             postValues2 = fr.toMap();
             childUpdates.put("/list/"+getString(R.string.person)+"/"+id+"/"+getString(R.string.friend)+"/"+name, postValues2);
@@ -191,7 +186,7 @@ public class AddFriend extends Activity {
             toastms = "친구 요청을 수락하였습니다.";
         }
         mPostReference.updateChildren(childUpdates);
-        Toast.makeText(AddFriend.this, toastms, Toast.LENGTH_SHORT).show();
+        Toast.makeText(ActivityAddFriend.this, toastms, Toast.LENGTH_SHORT).show();
     }
 
 

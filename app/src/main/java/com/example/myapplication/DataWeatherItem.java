@@ -2,7 +2,7 @@ package com.example.myapplication;
 
 import java.util.List;
 
-public class WeatherItem {
+public class DataWeatherItem {
     sysItem sys;
     List<weatherItem> weather;
     mainItem main;

@@ -1,17 +1,7 @@
 package com.example.myapplication;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.AsyncTask;
-import android.os.Build;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.Log;
@@ -27,16 +17,11 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.android.gms.common.api.Response;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -44,11 +29,9 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Random;
 
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-
-public class CustomAdapter extends PagerAdapter {
+public class AdapterCustom extends PagerAdapter {
 
     String name = "lezin";
     String person_list = "Person_List";
@@ -73,7 +56,7 @@ public class CustomAdapter extends PagerAdapter {
 
     MainActivity mainActivity;
 
-    TextView fromText, toText;
+    TextView fromText, toText, listText;
 
     AppCompatImageView weatherImage;
 
@@ -84,12 +67,12 @@ public class CustomAdapter extends PagerAdapter {
     int year_, month_, date_, day_;
     int today_year, today_month, today_date, today_day;
 
-    WeatherItem item;
+    DataWeatherItem item;
 
     LinearLayout[] layout = new LinearLayout[8];
 
 
-    public CustomAdapter(LayoutInflater inflater, String name, MainActivity mainActivity) {
+    public AdapterCustom(LayoutInflater inflater, String name, MainActivity mainActivity) {
         this.inflater = inflater;
         this.name = name;
         this.mainActivity = mainActivity;
@@ -250,6 +233,7 @@ public class CustomAdapter extends PagerAdapter {
         } else {
             view = inflater.inflate(R.layout.friends, null);
 
+            listText = (TextView)view.findViewById(R.id.listText);
             fromText = (TextView)view.findViewById(R.id.fromText);
             toText = (TextView)view.findViewById(R.id.toText);
 
@@ -274,7 +258,7 @@ public class CustomAdapter extends PagerAdapter {
             friendPlus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(mainActivity, AddFriend.class);
+                    Intent intent = new Intent(mainActivity, ActivityAddFriend.class);
                     intent.putExtra("name", name);
                     mainActivity.startActivityForResult(intent, 2);
                 }
@@ -284,7 +268,7 @@ public class CustomAdapter extends PagerAdapter {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     String friend =(String)parent.getAdapter().getItem(position);
-                    Intent intent = new Intent(mainActivity, getRequest.class);
+                    Intent intent = new Intent(mainActivity, PopUpGetRequest.class);
                     intent.putExtra("name", name);
                     intent.putExtra("friend", friend);
                     mainActivity.startActivityForResult(intent, 3);
@@ -304,7 +288,7 @@ public class CustomAdapter extends PagerAdapter {
             friends_list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent intent = new Intent(view.getContext(), DeleteFriend.class);
+                    Intent intent = new Intent(view.getContext(), PopUpDeleteFriend.class);
                     intent.putExtra("name", (String)parent.getAdapter().getItem(position));
                     intent.putExtra("myname", name);
                     mainActivity.startActivity(intent);
@@ -315,7 +299,7 @@ public class CustomAdapter extends PagerAdapter {
             friend_to.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent intent = new Intent(view.getContext(), CancelFriendRequest.class);
+                    Intent intent = new Intent(view.getContext(), PopUpCancelFriendRequest.class);
                     intent.putExtra("name", (String)parent.getAdapter().getItem(position));
                     intent.putExtra("myname", name);
                     mainActivity.startActivity(intent);
@@ -349,14 +333,14 @@ public class CustomAdapter extends PagerAdapter {
                 AscendingObj ascending = new AscendingObj();
                 ArrayList<timeTable> calTable = new ArrayList<timeTable>();
                 for(DataSnapshot postSnapshot : dataSnapshot.child(person_list).child(name).child(schedule).child(date[day_]).getChildren()){
-                    FirebaseSchedule get = postSnapshot.getValue(FirebaseSchedule.class);
-                    calTable.add(new timeTable(get.start_time, get.start_min, get.fin_time, get.fin_min, get.schedule, get.info));
+                    DataFirebaseSchedule get = postSnapshot.getValue(DataFirebaseSchedule.class);
+                    calTable.add(new timeTable(get.start_time, get.start_min, get.fin_time, get.fin_min, get.schedule, get.info, get.color));
                 }
                 Log.d("dat_", date[day_]+dt);
 
                 for(DataSnapshot postSnapshot : dataSnapshot.child(person_list).child(name).child("schedule_date").child(date[day_]).child(dt).getChildren()){
-                    FirebaseSchedule get = postSnapshot.getValue(FirebaseSchedule.class);
-                    calTable.add(new timeTable(get.start_time, get.start_min, get.fin_time, get.fin_min, get.schedule, get.info));
+                    DataFirebaseSchedule get = postSnapshot.getValue(DataFirebaseSchedule.class);
+                    calTable.add(new timeTable(get.start_time, get.start_min, get.fin_time, get.fin_min, get.schedule, get.info, get.color));
                 }
                 Collections.sort(calTable, ascending);
                 for(timeTable get : calTable){
@@ -401,14 +385,17 @@ public class CustomAdapter extends PagerAdapter {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 friends.clear();
                 for(DataSnapshot post : dataSnapshot.child(person_list).child(name).child(friend).getChildren()){
-                    FirebaseFriend get = post.getValue(FirebaseFriend.class);
+                    DataFirebaseFriend get = post.getValue(DataFirebaseFriend.class);
                     friends.add(get.name);
                 }
+                if(friends.size()==0){
+                    listText.setVisibility(View.VISIBLE);
+                } else listText.setVisibility(View.GONE);
                 adapterFriend.notifyDataSetChanged();
 
                 fromRequest.clear();
                 for(DataSnapshot post : dataSnapshot.child(request).child(name).child("from").getChildren()){
-                    FirebaseFriend get = post.getValue(FirebaseFriend.class);
+                    DataFirebaseFriend get = post.getValue(DataFirebaseFriend.class);
                     fromRequest.add(get.name);
                 }
                 if(fromRequest.size()==0){
@@ -420,7 +407,7 @@ public class CustomAdapter extends PagerAdapter {
 
                 toRequest.clear();
                 for(DataSnapshot post : dataSnapshot.child(request).child(name).child("to").getChildren()){
-                    FirebaseFriend get = post.getValue(FirebaseFriend.class);
+                    DataFirebaseFriend get = post.getValue(DataFirebaseFriend.class);
                     toRequest.add(get.name);
                 }
                 if(toRequest.size()==0){
@@ -453,19 +440,19 @@ public class CustomAdapter extends PagerAdapter {
 
                 for(int i=0;i<7;i++){
                     for(DataSnapshot postSnapshot : dataSnapshot.child(person_list).child(name).child(schedule).child(date[i]).getChildren()){
-                        FirebaseSchedule get = postSnapshot.getValue(FirebaseSchedule.class);
+                        DataFirebaseSchedule get = postSnapshot.getValue(DataFirebaseSchedule.class);
                         Log.d("shedule", get.schedule);
                         int startTime = get.start_time*60 + get.start_min;
                         int finTime = get.fin_time*60+get.fin_min;
                         String sche = get.schedule;
-                        String info = get.schedule;
-                        if(i==0) timeArraySun.add(new timeTable(startTime, finTime, sche, info));
-                        else if(i==1) timeArrayMon.add(new timeTable(startTime, finTime, sche, info));
-                        else if(i==2) timeArrayTue.add(new timeTable(startTime, finTime, sche, info));
-                        else if(i==3) timeArrayWed.add(new timeTable(startTime, finTime, sche, info));
-                        else if(i==4) timeArrayThu.add(new timeTable(startTime, finTime, sche, info));
-                        else if(i==5) timeArrayFri.add(new timeTable(startTime, finTime, sche, info));
-                        else timeArraySat.add(new timeTable(startTime, finTime, sche, info));
+                        String info = get.info;
+                        if(i==0) timeArraySun.add(new timeTable(startTime, finTime, sche, info, get.color));
+                        else if(i==1) timeArrayMon.add(new timeTable(startTime, finTime, sche, info, get.color));
+                        else if(i==2) timeArrayTue.add(new timeTable(startTime, finTime, sche, info, get.color));
+                        else if(i==3) timeArrayWed.add(new timeTable(startTime, finTime, sche, info, get.color));
+                        else if(i==4) timeArrayThu.add(new timeTable(startTime, finTime, sche, info, get.color));
+                        else if(i==5) timeArrayFri.add(new timeTable(startTime, finTime, sche, info, get.color));
+                        else timeArraySat.add(new timeTable(startTime, finTime, sche, info, get.color));
                     }
                 }
 
@@ -532,18 +519,18 @@ public class CustomAdapter extends PagerAdapter {
                 }
                 for(int i=0;i<7;i++){
                     for(DataSnapshot postSnapshot : dataSnapshot.child(person_list).child(name).child("schedule_date").child(date[i]).child(week[i]).getChildren()){
-                        FirebaseSchedule get = postSnapshot.getValue(FirebaseSchedule.class);
+                        DataFirebaseSchedule get = postSnapshot.getValue(DataFirebaseSchedule.class);
                         int startTime = get.start_time*60 + get.start_min;
                         int finTime = get.fin_time*60+get.fin_min;
                         String sche = get.schedule;
                         String info = get.info;
-                        if(i==0) timeArraySun.add(new timeTable(startTime, finTime, sche, info));
-                        else if(i==1) timeArrayMon.add(new timeTable(startTime, finTime, sche, info));
-                        else if(i==2) timeArrayTue.add(new timeTable(startTime, finTime, sche, info));
-                        else if(i==3) timeArrayWed.add(new timeTable(startTime, finTime, sche, info));
-                        else if(i==4) timeArrayThu.add(new timeTable(startTime, finTime, sche, info));
-                        else if(i==5) timeArrayFri.add(new timeTable(startTime, finTime, sche, info));
-                        else timeArraySat.add(new timeTable(startTime, finTime, sche, info));
+                        if(i==0) timeArraySun.add(new timeTable(startTime, finTime, sche, info, get.color));
+                        else if(i==1) timeArrayMon.add(new timeTable(startTime, finTime, sche, info, get.color));
+                        else if(i==2) timeArrayTue.add(new timeTable(startTime, finTime, sche, info, get.color));
+                        else if(i==3) timeArrayWed.add(new timeTable(startTime, finTime, sche, info, get.color));
+                        else if(i==4) timeArrayThu.add(new timeTable(startTime, finTime, sche, info, get.color));
+                        else if(i==5) timeArrayFri.add(new timeTable(startTime, finTime, sche, info, get.color));
+                        else timeArraySat.add(new timeTable(startTime, finTime, sche, info, get.color));
                     }
                 }
                 for(int i=0;i<7;i++){
@@ -581,46 +568,103 @@ public class CustomAdapter extends PagerAdapter {
                         int dur = table.get(j).startTime-lasttime;
                         float time;
                         if(dur>0){
-                            time = (float)dur / 30f;
-                            sum_time += time;
-                            Log.d("time", Float.toString(time));
-                            LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
-                            scheduleParams1.weight = time;
-                            ScheduleView schedule2 = new ScheduleView(view.getContext());
-                            schedule2.schedule_name.setText("");
-                            schedule2.schedule_info.setText("");
-                            schedule2.schedule_layout.setBackgroundColor(android.R.color.white);
-                            schedule2.setLayoutParams(scheduleParams1);
-                            layout[i].addView(schedule2);
+                            int first = lasttime;
+                            int last = table.get(j).startTime;
+                            int startLine = first/60+1;
+                            int finishLine = (last-1)/60;
+                            if(startLine > finishLine){
+                                time = (float)dur / 30f;
+                                sum_time += time;
+                                Log.d("time", Float.toString(time));
+                                LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
+                                scheduleParams1.weight = time;
+                                ViewSchedule schedule2 = new ViewSchedule(view.getContext());
+                                schedule2.schedule_name.setText("");
+                                schedule2.schedule_info.setText("");
+                                schedule2.schedule_layout.setBackgroundColor(0xFFFFFF);
+                                schedule2.setLayoutParams(scheduleParams1);
+                                layout[i].addView(schedule2);
+                            }
+                            else {
+                                float[] weightArray = new float[2 * finishLine - 2 * startLine + 3];
+                                float weightTmp = 60f * (float) startLine - (float) first;
+                                weightTmp = weightTmp / 30f;
+                                weightArray[0] = weightTmp;
+                                weightTmp = (float) last - (float) finishLine * 60f;
+                                weightTmp = weightTmp / 30f;
+                                weightArray[2 * finishLine - 2 * startLine + 2] = weightTmp - 0.02f;
+                                for (int tmp = 1; tmp < 2 * finishLine - 2 * startLine + 2; tmp++) {
+                                    if (tmp % 2 == 1) weightArray[tmp] = 0.02f;
+                                    else weightArray[tmp] = 1.98f;
+                                }
+                                for(int tmp = 0;tmp<weightArray.length;tmp++){
+                                    Log.d("머지", Float.toString(weightArray[tmp]));
+                                    sum_time += weightArray[tmp];
+                                    LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
+                                    scheduleParams1.weight = weightArray[tmp];
+                                    ViewSchedule schedule2 = new ViewSchedule(view.getContext());
+                                    schedule2.schedule_name.setText("");
+                                    schedule2.schedule_info.setText("");
+                                    if(tmp%2==1) schedule2.schedule_layout.setBackgroundColor(0xFF888888);
+                                    else schedule2.schedule_layout.setBackgroundColor(0xFFFFFF);
+                                    schedule2.setLayoutParams(scheduleParams1);
+                                    layout[i].addView(schedule2);
+                                }
+                            }
                         }
                         dur = table.get(j).finishTime-table.get(j).startTime;
                         time = (float)dur / 30f;
                         sum_time += time;
-                        LinearLayout.LayoutParams scheduleParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,0);
-                        scheduleParams.weight = time;   // 해당 일정의 시간 (30분 = 1 time)
-                        ScheduleView schedule = new ScheduleView(view.getContext());
-                        schedule.schedule_name.setText(table.get(j).name);
-                        schedule.schedule_info.setText(table.get(j).info);
-                        schedule.schedule_layout.setBackgroundColor(R.color.colorPrimaryDark);
-                        schedule.setLayoutParams(scheduleParams);
-                        layout[i].addView(schedule);
+                        layout[i].addView(vs(view, table.get(j).name, table.get(j).info, time, table.get(j).color));
 
                         lasttime = table.get(j).finishTime;
                     }
                     int last = 21*60;
                     int dur = last-lasttime;
                     if(dur>0){
-                        float time = (float)dur / 30f;
-                        sum_time += time;
-                        Log.d("time", Float.toString(time));
-                        LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
-                        scheduleParams1.weight = time;
-                        ScheduleView schedule2 = new ScheduleView(view.getContext());
-                        schedule2.schedule_name.setText("");
-                        schedule2.schedule_info.setText("");
-                        schedule2.schedule_layout.setBackgroundColor(android.R.color.white);
-                        schedule2.setLayoutParams(scheduleParams1);
-                        layout[i].addView(schedule2);
+                        int first = lasttime;
+
+                        int startLine = first/60+1;
+                        int finishLine = (last-1)/60;
+                        if(startLine > finishLine){
+                            float time = (float)dur / 30f;
+                            sum_time += time;
+                            Log.d("time", Float.toString(time));
+                            LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
+                            scheduleParams1.weight = time;
+                            ViewSchedule schedule2 = new ViewSchedule(view.getContext());
+                            schedule2.schedule_name.setText("");
+                            schedule2.schedule_info.setText("");
+                            schedule2.schedule_layout.setBackgroundColor(0xFFFFFF);
+                            schedule2.setLayoutParams(scheduleParams1);
+                            layout[i].addView(schedule2);
+                        } else{
+                            float[] weightArray = new float[2 * finishLine - 2 * startLine + 3];
+                            float weightTmp = 60f * (float) startLine - (float) first;
+                            weightTmp = weightTmp / 30f;
+                            weightArray[0] = weightTmp;
+                            weightTmp = (float) last - (float) finishLine * 60f;
+                            weightTmp = weightTmp / 30f;
+                            weightArray[2 * finishLine - 2 * startLine + 2] = weightTmp - 0.02f;
+                            for (int tmp = 1; tmp < 2 * finishLine - 2 * startLine + 2; tmp++) {
+                                if (tmp % 2 == 1) weightArray[tmp] = 0.02f;
+                                else weightArray[tmp] = 1.98f;
+                            }
+                            for(int tmp = 0;tmp<weightArray.length;tmp++){
+                                sum_time += weightArray[tmp];
+                                sum_time += weightArray[tmp];
+                                LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
+                                scheduleParams1.weight = weightArray[tmp];
+                                ViewSchedule schedule2 = new ViewSchedule(view.getContext());
+                                schedule2.schedule_name.setText("");
+                                schedule2.schedule_info.setText("");
+                                if(tmp%2==1) schedule2.schedule_layout.setBackgroundColor(0xFF888888);
+                                else schedule2.schedule_layout.setBackgroundColor(0xFFFFFF);
+                                schedule2.setLayoutParams(scheduleParams1);
+                                layout[i].addView(schedule2);
+                            }
+                        }
+
                     }
                     Log.d("sum of time "+i, Float.toString(sum_time));
                 }
@@ -640,6 +684,7 @@ public class CustomAdapter extends PagerAdapter {
         String info;
         int sTime, sMin;
         int fTime, fMin;
+        int color;
 
         public timeTable(){
             startTime = 0;
@@ -649,24 +694,27 @@ public class CustomAdapter extends PagerAdapter {
             sMin = 0;
             fTime = 0;
             fMin = 0;
+            color = 0;
         }
 
-        public timeTable(int sTime, int sMin, int fTime, int fMin, String name, String info){
+        public timeTable(int sTime, int sMin, int fTime, int fMin, String name, String info, int color){
             this.sTime = sTime;
             this.sMin = sMin;
             this.fTime = fTime;
             this.fMin = fMin;
             this.name = name;
             this.info = info;
+            this.color = color;
             startTime = sTime*60+sMin;
             finishTime = fTime*60+fMin;
         }
 
-        public timeTable(int startTime, int finishTime, String name, String info){
+        public timeTable(int startTime, int finishTime, String name, String info, int color){
             this.startTime = startTime;
             this.finishTime = finishTime;
             this.name = name;
             this.info = info;
+            this.color = color;
             sTime = 0;
             sMin = 0;
             fTime = 0;
@@ -683,6 +731,41 @@ public class CustomAdapter extends PagerAdapter {
             return rst;
         }
 
+    }
+
+    public ViewSchedule vs(View view, String name, String info, Float weight, int color){
+        LinearLayout.LayoutParams scheduleParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
+        scheduleParams.weight = weight;
+        ViewSchedule schedule = new ViewSchedule(view.getContext());
+        schedule.schedule_name.setText(name);
+        schedule.schedule_info.setText(info);
+
+        switch(color){
+            case 0:
+                schedule.schedule_layout.setBackgroundColor(0xFF3FB8AF);
+                break;
+            case 1:
+                schedule.schedule_layout.setBackgroundColor(0xFF7FC7AF);
+                break;
+            case 2:
+                schedule.schedule_layout.setBackgroundColor(0xFFDAD8A7);
+                break;
+            case 3:
+                schedule.schedule_layout.setBackgroundColor(0xFFFF9E9D);
+                break;
+            case 4:
+                schedule.schedule_layout.setBackgroundColor(0xFFC78989);
+                break;
+            case 5:
+                schedule.schedule_layout.setBackgroundColor(0xFFD6B8F3);
+                break;
+            default:
+                schedule.schedule_layout.setBackgroundColor(0xFF445878);
+                break;
+        }
+        schedule.setLayoutParams(scheduleParams);
+
+        return schedule;
     }
 
 

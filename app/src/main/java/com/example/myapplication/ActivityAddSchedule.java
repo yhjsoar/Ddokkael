@@ -8,9 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
@@ -26,13 +24,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 
-public class AddScheduleActivity extends Activity {
+public class ActivityAddSchedule extends Activity {
 
     EditText schedule_name, schedule_memo;
     Button add, cancel;
@@ -49,18 +46,18 @@ public class AddScheduleActivity extends Activity {
 
     DatabaseReference mPostReference;
 
-    FirebaseSchedule addingSchedule;
+    DataFirebaseSchedule addingSchedule;
 
     int fst = 0;
 
-    ClipBoard cb;
+    DataClipBoard cb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //타이틀바 없애기
 //        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.add_schedule);
+        setContentView(R.layout.activity_addschedule);
 
         final Calendar cal = Calendar.getInstance();
 
@@ -84,13 +81,13 @@ public class AddScheduleActivity extends Activity {
         Intent intent = getIntent();
         name = intent.getStringExtra("name");
 
-        cb = new ClipBoard();
+        cb = new DataClipBoard();
         try{
             cb.cm = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
             cb.initialize();
             cb.searchDatafromClipBoard();
             if(cb.isExist){
-                Intent intent2 = new Intent(AddScheduleActivity.this, PopUpClipboard.class);
+                Intent intent2 = new Intent(ActivityAddSchedule.this, PopUpClipboard.class);
                 startActivityForResult(intent2, 2);
             }
         } catch (Exception e){
@@ -127,13 +124,18 @@ public class AddScheduleActivity extends Activity {
                 int sstime = sTime*60 + sMin;
                 int fftime = fTime*60+fMin;
                 if(sstime >= fftime) {
-                    Toast.makeText(AddScheduleActivity.this, "종료 시간이 시작 시간보다 빠릅니다.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ActivityAddSchedule.this, "종료 시간이 시작 시간보다 빠릅니다.", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 String info = schedule_memo.getText().toString();
                 int checked = checkBox.isChecked() ? 1 : 0;
+                Log.d("info1", info);
 
-                addingSchedule = new FirebaseSchedule(schedule, info, sTime, sMin, fTime, fMin, checked);
+                Random rnd = new Random();
+                int c = rnd.nextInt(7);
+
+                addingSchedule = new DataFirebaseSchedule(schedule, info, sTime, sMin, fTime, fMin, checked, c);
+                Log.d("info2", addingSchedule.info);
                 check();
             }
         });
@@ -149,10 +151,10 @@ public class AddScheduleActivity extends Activity {
             @Override
             public void onClick(View v) {
                 if(state){
-                    Intent intent = new Intent(AddScheduleActivity.this, PopUpDaySelect.class);
+                    Intent intent = new Intent(ActivityAddSchedule.this, PopUpDaySelect.class);
                     startActivityForResult(intent, 1);
                 } else {
-                    DatePickerDialog date_dialog = new DatePickerDialog(AddScheduleActivity.this, new DatePickerDialog.OnDateSetListener() {
+                    DatePickerDialog date_dialog = new DatePickerDialog(ActivityAddSchedule.this, new DatePickerDialog.OnDateSetListener() {
                         @Override
                         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
 
@@ -177,7 +179,7 @@ public class AddScheduleActivity extends Activity {
         schedule_start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TimePickerDialog start_time_dialog = new TimePickerDialog(AddScheduleActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                TimePickerDialog start_time_dialog = new TimePickerDialog(ActivityAddSchedule.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                         startTime = String.format("%d:%d",hourOfDay,minute);
@@ -195,7 +197,7 @@ public class AddScheduleActivity extends Activity {
         schedule_end.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TimePickerDialog end_time_dialog = new TimePickerDialog(AddScheduleActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                TimePickerDialog end_time_dialog = new TimePickerDialog(ActivityAddSchedule.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                         endTime = String.format("%d:%d",hourOfDay,minute);
@@ -211,9 +213,11 @@ public class AddScheduleActivity extends Activity {
     }
 
     public void postFirebaseDatabase(boolean add){
+        Log.d("info3", addingSchedule.info);
         Map<String, Object> childUpdates = new HashMap<>();
         Map<String, Object> postValues = null;
         postValues = addingSchedule.toMap();
+        Log.d("post", postValues.toString());
         if(state){
             if(fst!=0) childUpdates.put("/list/Person_List/"+name+"/"+getString(R.string.schedule)+"/"+day_list[nowDay]+"/"+addingSchedule.schedule+Integer.toString(fst), postValues);
             else childUpdates.put("/list/Person_List/"+name+"/"+getString(R.string.schedule)+"/"+day_list[nowDay]+"/"+addingSchedule.schedule, postValues);
@@ -222,7 +226,7 @@ public class AddScheduleActivity extends Activity {
             else childUpdates.put("/list/Person_List/"+name+"/schedule_date/"+day_list[nowDay]+"/"+dt+"/"+addingSchedule.schedule, postValues);
         }
         mPostReference.updateChildren(childUpdates);
-        Toast.makeText(AddScheduleActivity.this, addingSchedule.schedule, Toast.LENGTH_SHORT).show();
+        Toast.makeText(ActivityAddSchedule.this, addingSchedule.schedule, Toast.LENGTH_SHORT).show();
 
         activity_end(true);
     }
@@ -234,7 +238,7 @@ public class AddScheduleActivity extends Activity {
                 boolean cannot = false;
                 int isFirst = 0;
                 for(DataSnapshot postSnapshot : dataSnapshot.child(getString(R.string.person)).child(name).child(getString(R.string.schedule)).child(day_list[nowDay]).getChildren()){
-                    FirebaseSchedule get = postSnapshot.getValue(FirebaseSchedule.class);
+                    DataFirebaseSchedule get = postSnapshot.getValue(DataFirebaseSchedule.class);
 
                     int st = get.start_time*60+get.start_min;
                     int ft = get.fin_time*60+get.fin_min;
@@ -260,7 +264,7 @@ public class AddScheduleActivity extends Activity {
                 if(state){
                     for(DataSnapshot postSnapshot : dataSnapshot.child(getString(R.string.person)).child(name).child("schedule_date").child(day_list[nowDay]).getChildren()){
                         for(DataSnapshot post : postSnapshot.getChildren()){
-                            FirebaseSchedule get = post.getValue(FirebaseSchedule.class);
+                            DataFirebaseSchedule get = post.getValue(DataFirebaseSchedule.class);
 
                             int st = get.start_time*60+get.start_min;
                             int ft = get.fin_time*60+get.fin_min;
@@ -290,7 +294,7 @@ public class AddScheduleActivity extends Activity {
                     }
                 } else{
                     for(DataSnapshot postSnapshot : dataSnapshot.child(getString(R.string.person)).child(name).child("schedule_date").child(day_list[nowDay]).child(dt).getChildren()){
-                        FirebaseSchedule get = postSnapshot.getValue(FirebaseSchedule.class);
+                        DataFirebaseSchedule get = postSnapshot.getValue(DataFirebaseSchedule.class);
                         Log.d("왜 다안읽어", get.schedule+postSnapshot.getKey());
                         int st = get.start_time*60+get.start_min;
                         int ft = get.fin_time*60+get.fin_min;
@@ -315,7 +319,7 @@ public class AddScheduleActivity extends Activity {
                     }
                 }
                 if(cannot){
-                    Toast.makeText(AddScheduleActivity.this, "같은 시간대에 이미 일정이 있습니다", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ActivityAddSchedule.this, "같은 시간대에 이미 일정이 있습니다", Toast.LENGTH_SHORT).show();
                 } else{
                     fst = isFirst;
                     postFirebaseDatabase(true);

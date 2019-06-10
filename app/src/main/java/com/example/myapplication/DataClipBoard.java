@@ -4,7 +4,7 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
 
-public class ClipBoard {
+public class DataClipBoard {
     ClipboardManager cm;
     int apm;
     int hour;
@@ -12,7 +12,7 @@ public class ClipBoard {
     String schedule;
     Boolean isExist;
 
-    ClipBoard(){
+    DataClipBoard(){
         apm = 0;
         hour = 0;
         minute = 0;

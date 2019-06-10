@@ -3,15 +3,15 @@ package com.example.myapplication;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FirebaseID {
+public class DataFirebaseID {
     public String id;
     public String pw;
 
-    public FirebaseID(){
+    public DataFirebaseID(){
 
     }
 
-    public FirebaseID(String id, String pw){
+    public DataFirebaseID(String id, String pw){
         this.id = id;
         this.pw = pw;
     }

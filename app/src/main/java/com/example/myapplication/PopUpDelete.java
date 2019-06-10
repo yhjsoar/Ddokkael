@@ -8,7 +8,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -39,7 +38,7 @@ public class PopUpDelete extends Activity {
         super.onCreate(savedInstanceState);
         //타이틀바 없애기
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_popup_delete);
+        setContentView(R.layout.popup_delete);
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
@@ -109,7 +108,7 @@ public class PopUpDelete extends Activity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Boolean isDeleted = false;
                 for(DataSnapshot post : dataSnapshot.child(getString(R.string.person)).child(name).child("schedule_date").child(date[deleteDay]).child(deleteDate).getChildren()){
-                    FirebaseSchedule get = post.getValue(FirebaseSchedule.class);
+                    DataFirebaseSchedule get = post.getValue(DataFirebaseSchedule.class);
                     if(get.schedule.equals(deleteSchedule) && get.start_min == sMin && get.start_time == sTime
                             && get.fin_min == fMin && get.fin_time == fTime){
                         post.getRef().removeValue();
@@ -119,7 +118,7 @@ public class PopUpDelete extends Activity {
                 }
                 if(!isDeleted){
                     for(DataSnapshot post : dataSnapshot.child(getString(R.string.person)).child(name).child(getString(R.string.schedule)).child(date[deleteDay]).getChildren()){
-                        FirebaseSchedule get = post.getValue(FirebaseSchedule.class);
+                        DataFirebaseSchedule get = post.getValue(DataFirebaseSchedule.class);
                         if(get.schedule.equals(deleteSchedule) && get.start_min == sMin && get.start_time == sTime
                                 && get.fin_min == fMin && get.fin_time == fTime){
                             post.getRef().removeValue();

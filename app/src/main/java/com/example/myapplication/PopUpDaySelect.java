@@ -33,7 +33,7 @@ public class PopUpDaySelect extends Activity {
         textSun.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(PopUpDaySelect.this, AddScheduleActivity.class);
+                Intent intent = new Intent(PopUpDaySelect.this, ActivityAddSchedule.class);
                 intent.putExtra("day", "일요일");
                 setResult(RESULT_OK, intent);
 
@@ -44,7 +44,7 @@ public class PopUpDaySelect extends Activity {
         textMon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(PopUpDaySelect.this, AddScheduleActivity.class);
+                Intent intent = new Intent(PopUpDaySelect.this, ActivityAddSchedule.class);
                 intent.putExtra("day", "월요일");
                 setResult(RESULT_OK, intent);
 
@@ -55,7 +55,7 @@ public class PopUpDaySelect extends Activity {
         textThu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(PopUpDaySelect.this, AddScheduleActivity.class);
+                Intent intent = new Intent(PopUpDaySelect.this, ActivityAddSchedule.class);
                 intent.putExtra("day", "화요일");
                 setResult(RESULT_OK, intent);
 
@@ -66,7 +66,7 @@ public class PopUpDaySelect extends Activity {
         textWed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(PopUpDaySelect.this, AddScheduleActivity.class);
+                Intent intent = new Intent(PopUpDaySelect.this, ActivityAddSchedule.class);
                 intent.putExtra("day", "수요일");
                 setResult(RESULT_OK, intent);
 
@@ -77,7 +77,7 @@ public class PopUpDaySelect extends Activity {
         textThur.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(PopUpDaySelect.this, AddScheduleActivity.class);
+                Intent intent = new Intent(PopUpDaySelect.this, ActivityAddSchedule.class);
                 intent.putExtra("day", "목요일");
                 setResult(RESULT_OK, intent);
 
@@ -88,7 +88,7 @@ public class PopUpDaySelect extends Activity {
         textFri.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(PopUpDaySelect.this, AddScheduleActivity.class);
+                Intent intent = new Intent(PopUpDaySelect.this, ActivityAddSchedule.class);
                 intent.putExtra("day", "금요일");
                 setResult(RESULT_OK, intent);
 
@@ -99,7 +99,7 @@ public class PopUpDaySelect extends Activity {
         textSat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(PopUpDaySelect.this, AddScheduleActivity.class);
+                Intent intent = new Intent(PopUpDaySelect.this, ActivityAddSchedule.class);
                 intent.putExtra("day", "토요일");
                 setResult(RESULT_OK, intent);
 

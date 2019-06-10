@@ -6,12 +6,12 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.Window;
 
-public class SettingTimeActivity extends Activity {
+public class ActivitySettingTime extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //타이틀바 없애기
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.add_schedule);
+        setContentView(R.layout.activity_addschedule);
 
         //UI 객체생성
 

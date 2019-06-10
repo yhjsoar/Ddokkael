@@ -1,55 +1,35 @@
 package com.example.myapplication;
 
-import android.app.AlarmManager;
-import android.app.DownloadManager;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.Image;
-import android.media.RingtoneManager;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Layout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CalendarView;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import android.support.v7.widget.Toolbar;
 
-import com.google.android.gms.common.api.Response;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -77,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     double longitude;
     double latitude;
 
-    WeatherItem item;
+    DataWeatherItem item;
     LocationManager lm;
 
     LinearLayout layout;
@@ -95,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         // Contents
         myToolbar = (Toolbar)findViewById(R.id.my_toolbar);
         pager = (ViewPager)findViewById(R.id.viewPager);
-        CustomAdapter adapter = new CustomAdapter(getLayoutInflater(), name, this);
+        AdapterCustom adapter = new AdapterCustom(getLayoutInflater(), name, this);
         pager.setAdapter(adapter);
         pager.setCurrentItem(1);
         lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
@@ -145,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         add_schedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AddScheduleActivity.class);
+                Intent intent = new Intent(MainActivity.this, ActivityAddSchedule.class);
                 intent.putExtra("name", name);
                 startActivityForResult(intent, 1);
             }
@@ -185,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         //return super.onOptionsItemSelected(item);
         if(item.getItemId() == R.id.logout){
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            Intent intent = new Intent(MainActivity.this, ActivityLogin.class);
             intent.putExtra("logout", "yes");
             startActivity(intent);
             finish();
@@ -218,14 +198,14 @@ public class MainActivity extends AppCompatActivity {
         public void onProviderDisabled(String provider) {}
     };
 
-    public class MyAsyncTask extends AsyncTask<String, Void, WeatherItem> {
+    public class MyAsyncTask extends AsyncTask<String, Void, DataWeatherItem> {
         OkHttpClient client = new OkHttpClient();
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
         }
         @Override
-        protected WeatherItem doInBackground(String... params) {
+        protected DataWeatherItem doInBackground(String... params) {
             HttpUrl.Builder urlBuilder= HttpUrl.parse("https://api.openweathermap.org/data/2.5/weather").newBuilder();
             urlBuilder.addQueryParameter("lat",Double.toString(latitude));
             urlBuilder.addQueryParameter("lon",Double.toString(longitude));
@@ -238,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
                 Gson gson = new GsonBuilder().create();
                 JsonParser parser = new JsonParser();
                 JsonElement rootObject = parser.parse(response.body().charStream()).getAsJsonObject();
-                item = gson.fromJson(rootObject, WeatherItem.class);
+                item = gson.fromJson(rootObject, DataWeatherItem.class);
                 return item;
             } catch(Exception e) {
                 e.printStackTrace();
@@ -246,12 +226,12 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
         @Override
-        protected void onPostExecute(WeatherItem result) {
+        protected void onPostExecute(DataWeatherItem result) {
             super.onPostExecute(result);
         }
     }
 
-    public WeatherItem getWeather(){
+    public DataWeatherItem getWeather(){
         item = null;
         if ( Build.VERSION.SDK_INT >= 23 &&
                 ContextCompat.checkSelfPermission(getApplicationContext(),
@@ -261,9 +241,6 @@ public class MainActivity extends AppCompatActivity {
                     0 );
         }
         else{
-            Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            longitude = location.getLongitude();
-            latitude = location.getLatitude();
             lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                     10,
                     0,
@@ -272,6 +249,11 @@ public class MainActivity extends AppCompatActivity {
                     10,
                     0,
                     networkLocationListener);
+            Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if(location==null) location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            if(location==null) return null;
+            longitude = location.getLongitude();
+            latitude = location.getLatitude();
             MyAsyncTask mProcessTask = new MyAsyncTask();
             try{
                 item = mProcessTask.execute().get();
@@ -285,7 +267,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return item;
     }
-
 
 }
 

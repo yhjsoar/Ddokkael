@@ -20,7 +20,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 import java.util.Map;
 
-public class JoininActivity extends Activity {
+public class ActivityJoinin extends Activity {
     private DatabaseReference mPostReference;
 
     EditText edit_join_id, edit_join_pw;
@@ -33,7 +33,7 @@ public class JoininActivity extends Activity {
         super.onCreate(savedInstanceState);
         //타이틀바 없애기
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_joinin);
+        setContentView(R.layout.popup_joinin);
 
         mPostReference = FirebaseDatabase.getInstance().getReference();
 
@@ -51,7 +51,7 @@ public class JoininActivity extends Activity {
 
                 // 정상적인 회원가입인지 확인
                 if(id.length()*pw.length()==0){
-                    Toast.makeText(JoininActivity.this, "바르게 입력해주세요.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ActivityJoinin.this, "바르게 입력해주세요.", Toast.LENGTH_SHORT).show();
                 }
                 else{
                     check();
@@ -92,14 +92,14 @@ public class JoininActivity extends Activity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 boolean isExist = false;
                 for(DataSnapshot postSnapshot : dataSnapshot.child(getString(R.string.id)).getChildren()){
-                    FirebaseID get = postSnapshot.getValue(FirebaseID.class);
+                    DataFirebaseID get = postSnapshot.getValue(DataFirebaseID.class);
                     if(get.id.equals(id)){
                         isExist = true;
                         break;
                     }
                 }
                 if(isExist){
-                    Toast.makeText(JoininActivity.this, "id already exists.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ActivityJoinin.this, "id already exists.", Toast.LENGTH_SHORT).show();
                 } else{
                     postFirebaseDatabase(true);
 
@@ -124,11 +124,11 @@ public class JoininActivity extends Activity {
         Map<String, Object> childUpdates = new HashMap<>();
         Map<String, Object> postValues = null;
         if(add){
-            FirebaseID idinfo = new FirebaseID(id, pw);
+            DataFirebaseID idinfo = new DataFirebaseID(id, pw);
             postValues = idinfo.toMap();
         }
         childUpdates.put("/list/"+getString(R.string.id)+"/"+id, postValues);
         mPostReference.updateChildren(childUpdates);
-        Toast.makeText(JoininActivity.this, "sign up complete", Toast.LENGTH_SHORT).show();
+        Toast.makeText(ActivityJoinin.this, "sign up complete", Toast.LENGTH_SHORT).show();
     }
 }

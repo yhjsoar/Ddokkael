@@ -3,11 +3,11 @@ package com.example.myapplication;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 
-public class FriendSchedule extends Activity {
+public class ActivityFriendSchedule extends Activity {
     int[][] result = new int[7][1441];
 
     String name1 = "lezin";
@@ -129,30 +129,30 @@ public class FriendSchedule extends Activity {
         mPostReference.child("list").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ArrayList<timeTable> timeArraySun = new ArrayList<FriendSchedule.timeTable>();
-                ArrayList<FriendSchedule.timeTable> timeArrayMon = new ArrayList<FriendSchedule.timeTable>();
-                ArrayList<FriendSchedule.timeTable> timeArrayTue = new ArrayList<FriendSchedule.timeTable>();
-                ArrayList<FriendSchedule.timeTable> timeArrayWed = new ArrayList<FriendSchedule.timeTable>();
-                ArrayList<FriendSchedule.timeTable> timeArrayThu = new ArrayList<FriendSchedule.timeTable>();
-                ArrayList<FriendSchedule.timeTable> timeArrayFri = new ArrayList<FriendSchedule.timeTable>();
-                ArrayList<FriendSchedule.timeTable> timeArraySat = new ArrayList<FriendSchedule.timeTable>();
+                ArrayList<timeTable> timeArraySun = new ArrayList<ActivityFriendSchedule.timeTable>();
+                ArrayList<ActivityFriendSchedule.timeTable> timeArrayMon = new ArrayList<ActivityFriendSchedule.timeTable>();
+                ArrayList<ActivityFriendSchedule.timeTable> timeArrayTue = new ArrayList<ActivityFriendSchedule.timeTable>();
+                ArrayList<ActivityFriendSchedule.timeTable> timeArrayWed = new ArrayList<ActivityFriendSchedule.timeTable>();
+                ArrayList<ActivityFriendSchedule.timeTable> timeArrayThu = new ArrayList<ActivityFriendSchedule.timeTable>();
+                ArrayList<ActivityFriendSchedule.timeTable> timeArrayFri = new ArrayList<ActivityFriendSchedule.timeTable>();
+                ArrayList<ActivityFriendSchedule.timeTable> timeArraySat = new ArrayList<ActivityFriendSchedule.timeTable>();
 
                 for(int i=0;i<7;i++){
                     for(DataSnapshot postSnapshot : dataSnapshot.child(person_list).child(name1).child(schedule).child(date[i]).getChildren()){
-                        FirebaseSchedule get = postSnapshot.getValue(FirebaseSchedule.class);
+                        DataFirebaseSchedule get = postSnapshot.getValue(DataFirebaseSchedule.class);
                         if(get.isOpen == 0) continue;
                         Log.d("shedule", get.schedule);
                         int startTime = get.start_time*60 + get.start_min;
                         int finTime = get.fin_time*60+get.fin_min;
                         String sche = get.schedule;
-                        String info = get.schedule;
-                        if(i==0) timeArraySun.add(new timeTable(startTime, finTime, sche, info));
-                        else if(i==1) timeArrayMon.add(new timeTable(startTime, finTime, sche, info));
-                        else if(i==2) timeArrayTue.add(new timeTable(startTime, finTime, sche, info));
-                        else if(i==3) timeArrayWed.add(new timeTable(startTime, finTime, sche, info));
-                        else if(i==4) timeArrayThu.add(new timeTable(startTime, finTime, sche, info));
-                        else if(i==5) timeArrayFri.add(new timeTable(startTime, finTime, sche, info));
-                        else timeArraySat.add(new timeTable(startTime, finTime, sche, info));
+                        String info = get.info;
+                        if(i==0) timeArraySun.add(new timeTable(startTime, finTime, sche, info, get.color));
+                        else if(i==1) timeArrayMon.add(new timeTable(startTime, finTime, sche, info, get.color));
+                        else if(i==2) timeArrayTue.add(new timeTable(startTime, finTime, sche, info, get.color));
+                        else if(i==3) timeArrayWed.add(new timeTable(startTime, finTime, sche, info, get.color));
+                        else if(i==4) timeArrayThu.add(new timeTable(startTime, finTime, sche, info, get.color));
+                        else if(i==5) timeArrayFri.add(new timeTable(startTime, finTime, sche, info, get.color));
+                        else timeArraySat.add(new timeTable(startTime, finTime, sche, info, get.color));
                     }
                 }
 
@@ -219,23 +219,23 @@ public class FriendSchedule extends Activity {
                 }
                 for(int i=0;i<7;i++){
                     for(DataSnapshot postSnapshot : dataSnapshot.child(person_list).child(name1).child("schedule_date").child(date[i]).child(week[i]).getChildren()){
-                        FirebaseSchedule get = postSnapshot.getValue(FirebaseSchedule.class);
+                        DataFirebaseSchedule get = postSnapshot.getValue(DataFirebaseSchedule.class);
                         if(get.isOpen == 0) continue;
                         int startTime = get.start_time*60 + get.start_min;
                         int finTime = get.fin_time*60+get.fin_min;
                         String sche = get.schedule;
                         String info = get.info;
-                        if(i==0) timeArraySun.add(new timeTable(startTime, finTime, sche, info));
-                        else if(i==1) timeArrayMon.add(new timeTable(startTime, finTime, sche, info));
-                        else if(i==2) timeArrayTue.add(new timeTable(startTime, finTime, sche, info));
-                        else if(i==3) timeArrayWed.add(new timeTable(startTime, finTime, sche, info));
-                        else if(i==4) timeArrayThu.add(new timeTable(startTime, finTime, sche, info));
-                        else if(i==5) timeArrayFri.add(new timeTable(startTime, finTime, sche, info));
-                        else timeArraySat.add(new timeTable(startTime, finTime, sche, info));
+                        if(i==0) timeArraySun.add(new timeTable(startTime, finTime, sche, info, get.color));
+                        else if(i==1) timeArrayMon.add(new timeTable(startTime, finTime, sche, info, get.color));
+                        else if(i==2) timeArrayTue.add(new timeTable(startTime, finTime, sche, info, get.color));
+                        else if(i==3) timeArrayWed.add(new timeTable(startTime, finTime, sche, info, get.color));
+                        else if(i==4) timeArrayThu.add(new timeTable(startTime, finTime, sche, info, get.color));
+                        else if(i==5) timeArrayFri.add(new timeTable(startTime, finTime, sche, info, get.color));
+                        else timeArraySat.add(new timeTable(startTime, finTime, sche, info, get.color));
                     }
                 }
                 for(int i=0;i<7;i++){
-                    FriendSchedule.AscendingObj ascending = new FriendSchedule.AscendingObj();
+                    ActivityFriendSchedule.AscendingObj ascending = new ActivityFriendSchedule.AscendingObj();
                     if(i==0) Collections.sort(timeArraySun, ascending);
                     else if(i==1) Collections.sort(timeArrayMon, ascending);
                     else if(i==2) Collections.sort(timeArrayTue, ascending);
@@ -249,7 +249,7 @@ public class FriendSchedule extends Activity {
 
                 for(int i=1;i<8;i++){
                     int dt = i-1;
-                    ArrayList<FriendSchedule.timeTable> table;
+                    ArrayList<ActivityFriendSchedule.timeTable> table;
 
                     if(i==1) table =timeArraySun;
                     else if(i==2) table =timeArrayMon;
@@ -271,46 +271,102 @@ public class FriendSchedule extends Activity {
                         int dur = table.get(j).startTime-lasttime;
                         float time;
                         if(dur>0){
-                            time = (float)dur / 30f;
-                            sum_time += time;
-                            Log.d("time", Float.toString(time));
-                            LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,0);
-                            scheduleParams1.weight = time;
-                            ScheduleView schedule2 = new ScheduleView(FriendSchedule.this);
-                            schedule2.schedule_name.setText("");
-                            schedule2.schedule_info.setText("");
-                            schedule2.schedule_layout.setBackgroundColor(android.R.color.white);
-                            schedule2.setLayoutParams(scheduleParams1);
-                            layout[i].addView(schedule2);
+                            int first = lasttime;
+                            int last = table.get(j).startTime;
+                            int startLine = first/60+1;
+                            int finishLine = (last-1)/60;
+                            if(startLine > finishLine){
+                                time = (float)dur / 30f;
+                                sum_time += time;
+                                Log.d("time", Float.toString(time));
+                                LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
+                                scheduleParams1.weight = time;
+                                ViewSchedule schedule2 = new ViewSchedule(ActivityFriendSchedule.this);
+                                schedule2.schedule_name.setText("");
+                                schedule2.schedule_info.setText("");
+                                schedule2.schedule_layout.setBackgroundColor(0xFFFFFF);
+                                schedule2.setLayoutParams(scheduleParams1);
+                                layout[i].addView(schedule2);
+                            }
+                            else {
+                                float[] weightArray = new float[2 * finishLine - 2 * startLine + 3];
+                                float weightTmp = 60f * (float) startLine - (float) first;
+                                weightTmp = weightTmp / 30f;
+                                weightArray[0] = weightTmp;
+                                weightTmp = (float) last - (float) finishLine * 60f;
+                                weightTmp = weightTmp / 30f;
+                                weightArray[2 * finishLine - 2 * startLine + 2] = weightTmp - 0.02f;
+                                for (int tmp = 1; tmp < 2 * finishLine - 2 * startLine + 2; tmp++) {
+                                    if (tmp % 2 == 1) weightArray[tmp] = 0.02f;
+                                    else weightArray[tmp] = 1.98f;
+                                }
+                                for(int tmp = 0;tmp<weightArray.length;tmp++){
+                                    Log.d("머지", Float.toString(weightArray[tmp]));
+                                    sum_time += weightArray[tmp];
+                                    LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
+                                    scheduleParams1.weight = weightArray[tmp];
+                                    ViewSchedule schedule2 = new ViewSchedule(ActivityFriendSchedule.this);
+                                    schedule2.schedule_name.setText("");
+                                    schedule2.schedule_info.setText("");
+                                    if(tmp%2==1) schedule2.schedule_layout.setBackgroundColor(0xFF888888);
+                                    else schedule2.schedule_layout.setBackgroundColor(0xFFFFFF);
+                                    schedule2.setLayoutParams(scheduleParams1);
+                                    layout[i].addView(schedule2);
+                                }
+                            }
                         }
                         dur = table.get(j).finishTime-table.get(j).startTime;
                         time = (float)dur / 30f;
                         sum_time += time;
-                        LinearLayout.LayoutParams scheduleParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
-                        scheduleParams.weight = time;   // 해당 일정의 시간 (30분 = 1 time)
-                        ScheduleView schedule = new ScheduleView(FriendSchedule.this);
-                        schedule.schedule_name.setText(table.get(j).name);
-                        schedule.schedule_info.setText(table.get(j).info);
-                        schedule.schedule_layout.setBackgroundColor(R.color.colorPrimaryDark);
-                        schedule.setLayoutParams(scheduleParams);
-                        layout[i].addView(schedule);
+                        layout[i].addView(vs(table.get(j).name, table.get(j).info, time, table.get(j).color));
 
                         lasttime = table.get(j).finishTime;
                     }
                     int last = 21*60;
                     int dur = last-lasttime;
                     if(dur>0){
-                        float time = (float)dur / 30f;
-                        sum_time += time;
-                        Log.d("time", Float.toString(time));
-                        LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
-                        scheduleParams1.weight = time;
-                        ScheduleView schedule2 = new ScheduleView(FriendSchedule.this);
-                        schedule2.schedule_name.setText("");
-                        schedule2.schedule_info.setText("");
-                        schedule2.schedule_layout.setBackgroundColor(android.R.color.white);
-                        schedule2.setLayoutParams(scheduleParams1);
-                        layout[i].addView(schedule2);
+                        int first = lasttime;
+
+                        int startLine = first/60+1;
+                        int finishLine = (last-1)/60;
+                        if(startLine > finishLine){
+                            float time = (float)dur / 30f;
+                            sum_time += time;
+                            Log.d("time", Float.toString(time));
+                            LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
+                            scheduleParams1.weight = time;
+                            ViewSchedule schedule2 = new ViewSchedule(ActivityFriendSchedule.this);
+                            schedule2.schedule_name.setText("");
+                            schedule2.schedule_info.setText("");
+                            schedule2.schedule_layout.setBackgroundColor(0xFFFFFF);
+                            schedule2.setLayoutParams(scheduleParams1);
+                            layout[i].addView(schedule2);
+                        } else{
+                            float[] weightArray = new float[2 * finishLine - 2 * startLine + 3];
+                            float weightTmp = 60f * (float) startLine - (float) first;
+                            weightTmp = weightTmp / 30f;
+                            weightArray[0] = weightTmp;
+                            weightTmp = (float) last - (float) finishLine * 60f;
+                            weightTmp = weightTmp / 30f;
+                            weightArray[2 * finishLine - 2 * startLine + 2] = weightTmp - 0.02f;
+                            for (int tmp = 1; tmp < 2 * finishLine - 2 * startLine + 2; tmp++) {
+                                if (tmp % 2 == 1) weightArray[tmp] = 0.02f;
+                                else weightArray[tmp] = 1.98f;
+                            }
+                            for(int tmp = 0;tmp<weightArray.length;tmp++){
+                                sum_time += weightArray[tmp];
+                                sum_time += weightArray[tmp];
+                                LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
+                                scheduleParams1.weight = weightArray[tmp];
+                                ViewSchedule schedule2 = new ViewSchedule(ActivityFriendSchedule.this);
+                                schedule2.schedule_name.setText("");
+                                schedule2.schedule_info.setText("");
+                                if(tmp%2==1) schedule2.schedule_layout.setBackgroundColor(0xFF888888);
+                                else schedule2.schedule_layout.setBackgroundColor(0xFFFFFF);
+                                schedule2.setLayoutParams(scheduleParams1);
+                                layout[i].addView(schedule2);
+                            }
+                        }
                     }
                     Log.d("sum of time "+i, Float.toString(sum_time));
                 }
@@ -334,7 +390,7 @@ public class FriendSchedule extends Activity {
                 }
                 for(int i=0;i<7;i++){
                     for(DataSnapshot post : dataSnapshot.child(person_list).child(name1).child(schedule).child(date[i]).getChildren()){
-                        FirebaseSchedule get = post.getValue(FirebaseSchedule.class);
+                        DataFirebaseSchedule get = post.getValue(DataFirebaseSchedule.class);
                         int st = get.start_time*60+get.start_min;
                         int ft = get.fin_time*60+get.fin_min;
                         for(int j=st;j<=ft;j++){
@@ -344,7 +400,7 @@ public class FriendSchedule extends Activity {
                 }
                 for(int i=0;i<7;i++){
                     for(DataSnapshot post : dataSnapshot.child(getString(R.string.person)).child(name2).child(getString(R.string.schedule)).child(date[i]).getChildren()){
-                        FirebaseSchedule get = post.getValue(FirebaseSchedule.class);
+                        DataFirebaseSchedule get = post.getValue(DataFirebaseSchedule.class);
                         if(get.isOpen==0) continue;
                         int st = get.start_time*60+get.start_min;
                         int ft = get.fin_time*60+get.fin_min;
@@ -417,7 +473,7 @@ public class FriendSchedule extends Activity {
                 }
                 for(int i=0;i<7;i++){
                     for(DataSnapshot post : dataSnapshot.child(person_list).child(name1).child("schedule_date").child(date[i]).child(week[i]).getChildren()){
-                        FirebaseSchedule get = post.getValue(FirebaseSchedule.class);
+                        DataFirebaseSchedule get = post.getValue(DataFirebaseSchedule.class);
                         int st = get.start_time*60+get.start_min;
                         int ft = get.fin_time*60+get.fin_min;
                         for(int j=st;j<=ft;j++){
@@ -427,7 +483,7 @@ public class FriendSchedule extends Activity {
                 }
                 for(int i=0;i<7;i++){
                     for(DataSnapshot post : dataSnapshot.child(person_list).child(name2).child("schedule_date").child(date[i]).child(week[i]).getChildren()){
-                        FirebaseSchedule get = post.getValue(FirebaseSchedule.class);
+                        DataFirebaseSchedule get = post.getValue(DataFirebaseSchedule.class);
                         if(get.isOpen == 0) continue;
                         int st = get.start_time*60+get.start_min;
                         int ft = get.fin_time*60+get.fin_min;
@@ -437,13 +493,13 @@ public class FriendSchedule extends Activity {
                     }
                 }
                 // View view = inflater.inflate(R.layout.timetable, this);
-                ArrayList<timeTable> timeArraySun = new ArrayList<FriendSchedule.timeTable>();
-                ArrayList<FriendSchedule.timeTable> timeArrayMon = new ArrayList<FriendSchedule.timeTable>();
-                ArrayList<FriendSchedule.timeTable> timeArrayTue = new ArrayList<FriendSchedule.timeTable>();
-                ArrayList<FriendSchedule.timeTable> timeArrayWed = new ArrayList<FriendSchedule.timeTable>();
-                ArrayList<FriendSchedule.timeTable> timeArrayThu = new ArrayList<FriendSchedule.timeTable>();
-                ArrayList<FriendSchedule.timeTable> timeArrayFri = new ArrayList<FriendSchedule.timeTable>();
-                ArrayList<FriendSchedule.timeTable> timeArraySat = new ArrayList<FriendSchedule.timeTable>();
+                ArrayList<timeTable> timeArraySun = new ArrayList<ActivityFriendSchedule.timeTable>();
+                ArrayList<ActivityFriendSchedule.timeTable> timeArrayMon = new ArrayList<ActivityFriendSchedule.timeTable>();
+                ArrayList<ActivityFriendSchedule.timeTable> timeArrayTue = new ArrayList<ActivityFriendSchedule.timeTable>();
+                ArrayList<ActivityFriendSchedule.timeTable> timeArrayWed = new ArrayList<ActivityFriendSchedule.timeTable>();
+                ArrayList<ActivityFriendSchedule.timeTable> timeArrayThu = new ArrayList<ActivityFriendSchedule.timeTable>();
+                ArrayList<ActivityFriendSchedule.timeTable> timeArrayFri = new ArrayList<ActivityFriendSchedule.timeTable>();
+                ArrayList<ActivityFriendSchedule.timeTable> timeArraySat = new ArrayList<ActivityFriendSchedule.timeTable>();
 
                 int counting = 0;
                 int st = 0;
@@ -464,13 +520,13 @@ public class FriendSchedule extends Activity {
                             int fTime = ft/60;
                             int fMin = ft%60;
                             String info = Integer.toString(sTime) + ":" + (sMin < 10 ? "0"+Integer.toString(sMin) : Integer.toString(sMin)) + "~" + Integer.toString(fTime) + ":" + (fMin < 10 ? "0"+Integer.toString(fMin) : Integer.toString(fMin));
-                            if(i==0) timeArraySun.add(new timeTable(st, ft, share, info));
-                            else if(i==1) timeArrayMon.add(new timeTable(st, ft, share, info));
-                            else if(i==2) timeArrayTue.add(new timeTable(st, ft, share, info));
-                            else if(i==3) timeArrayWed.add(new timeTable(st, ft, share, info));
-                            else if(i==4) timeArrayThu.add(new timeTable(st, ft, share, info));
-                            else if(i==5) timeArrayFri.add(new timeTable(st, ft, share, info));
-                            else if(i==6) timeArraySat.add(new timeTable(st, ft, share, info));
+                            if(i==0) timeArraySun.add(new timeTable(st, ft, share, info, 0));
+                            else if(i==1) timeArrayMon.add(new timeTable(st, ft, share, info, 0));
+                            else if(i==2) timeArrayTue.add(new timeTable(st, ft, share, info, 0));
+                            else if(i==3) timeArrayWed.add(new timeTable(st, ft, share, info, 0));
+                            else if(i==4) timeArrayThu.add(new timeTable(st, ft, share, info, 0));
+                            else if(i==5) timeArrayFri.add(new timeTable(st, ft, share, info, 0));
+                            else if(i==6) timeArraySat.add(new timeTable(st, ft, share, info, 0));
                             counting = 0;
                         } else if(counting == 0 && result[i][j]==0){
                             continue;
@@ -484,19 +540,19 @@ public class FriendSchedule extends Activity {
                         int fTime = ft/60;
                         int fMin = ft%60;
                         String info = Integer.toString(sTime) + ":" + (sMin < 10 ? "0"+Integer.toString(sMin) : Integer.toString(sMin)) + "~" + Integer.toString(fTime) + ":" + (fMin < 10 ? "0"+Integer.toString(fMin) : Integer.toString(fMin));
-                        if(i==0) timeArraySun.add(new timeTable(st, ft, share, info));
-                        else if(i==1) timeArrayMon.add(new timeTable(st, ft, share, info));
-                        else if(i==2) timeArrayTue.add(new timeTable(st, ft, share, info));
-                        else if(i==3) timeArrayWed.add(new timeTable(st, ft, share, info));
-                        else if(i==4) timeArrayThu.add(new timeTable(st, ft, share, info));
-                        else if(i==5) timeArrayFri.add(new timeTable(st, ft, share, info));
-                        else if(i==6) timeArraySat.add(new timeTable(st, ft, share, info));
+                        if(i==0) timeArraySun.add(new timeTable(st, ft, share, info, 0));
+                        else if(i==1) timeArrayMon.add(new timeTable(st, ft, share, info, 0));
+                        else if(i==2) timeArrayTue.add(new timeTable(st, ft, share, info, 0));
+                        else if(i==3) timeArrayWed.add(new timeTable(st, ft, share, info, 0));
+                        else if(i==4) timeArrayThu.add(new timeTable(st, ft, share, info, 0));
+                        else if(i==5) timeArrayFri.add(new timeTable(st, ft, share, info, 0));
+                        else if(i==6) timeArraySat.add(new timeTable(st, ft, share, info, 0));
                     }
                 }
 
                 for(int i=1;i<8;i++){
                     int dt = i-1;
-                    ArrayList<FriendSchedule.timeTable> table;
+                    ArrayList<ActivityFriendSchedule.timeTable> table;
 
                     if(i==1) table =timeArraySun;
                     else if(i==2) table =timeArrayMon;
@@ -518,27 +574,59 @@ public class FriendSchedule extends Activity {
                         int dur = table.get(j).startTime-lasttime;
                         float time;
                         if(dur>0){
-                            time = (float)dur / 30f;
-                            sum_time += time;
-                            Log.d("time", Float.toString(time));
-                            LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,0);
-                            scheduleParams1.weight = time;
-                            ScheduleView schedule2 = new ScheduleView(FriendSchedule.this);
-                            schedule2.schedule_name.setText("");
-                            schedule2.schedule_info.setText("");
-                            schedule2.schedule_layout.setBackgroundColor(android.R.color.white);
-                            schedule2.setLayoutParams(scheduleParams1);
-                            layout[i].addView(schedule2);
+                            int first = lasttime;
+                            int last = table.get(j).startTime;
+                            int startLine = first/60+1;
+                            int finishLine = (last-1)/60;
+                            if(startLine > finishLine){
+                                time = (float)dur / 30f;
+                                sum_time += time;
+                                Log.d("time", Float.toString(time));
+                                LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
+                                scheduleParams1.weight = time;
+                                ViewSchedule schedule2 = new ViewSchedule(ActivityFriendSchedule.this);
+                                schedule2.schedule_name.setText("");
+                                schedule2.schedule_info.setText("");
+                                schedule2.schedule_layout.setBackgroundColor(0xFFFFFF);
+                                schedule2.setLayoutParams(scheduleParams1);
+                                layout[i].addView(schedule2);
+                            }
+                            else {
+                                float[] weightArray = new float[2 * finishLine - 2 * startLine + 3];
+                                float weightTmp = 60f * (float) startLine - (float) first;
+                                weightTmp = weightTmp / 30f;
+                                weightArray[0] = weightTmp;
+                                weightTmp = (float) last - (float) finishLine * 60f;
+                                weightTmp = weightTmp / 30f;
+                                weightArray[2 * finishLine - 2 * startLine + 2] = weightTmp - 0.02f;
+                                for (int tmp = 1; tmp < 2 * finishLine - 2 * startLine + 2; tmp++) {
+                                    if (tmp % 2 == 1) weightArray[tmp] = 0.02f;
+                                    else weightArray[tmp] = 1.98f;
+                                }
+                                for(int tmp = 0;tmp<weightArray.length;tmp++){
+                                    Log.d("머지", Float.toString(weightArray[tmp]));
+                                    sum_time += weightArray[tmp];
+                                    LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
+                                    scheduleParams1.weight = weightArray[tmp];
+                                    ViewSchedule schedule2 = new ViewSchedule(ActivityFriendSchedule.this);
+                                    schedule2.schedule_name.setText("");
+                                    schedule2.schedule_info.setText("");
+                                    if(tmp%2==1) schedule2.schedule_layout.setBackgroundColor(0xFF888888);
+                                    else schedule2.schedule_layout.setBackgroundColor(0xFFFFFF);
+                                    schedule2.setLayoutParams(scheduleParams1);
+                                    layout[i].addView(schedule2);
+                                }
+                            }
                         }
                         dur = table.get(j).finishTime-table.get(j).startTime;
                         time = (float)dur / 30f;
                         sum_time += time;
                         LinearLayout.LayoutParams scheduleParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
                         scheduleParams.weight = time;   // 해당 일정의 시간 (30분 = 1 time)
-                        ScheduleView schedule = new ScheduleView(FriendSchedule.this);
+                        ViewSchedule schedule = new ViewSchedule(ActivityFriendSchedule.this);
                         schedule.schedule_name.setText(table.get(j).name);
                         schedule.schedule_info.setText(table.get(j).info);
-                        schedule.schedule_layout.setBackgroundColor(R.color.colorPrimaryDark);
+                        schedule.schedule_layout.setBackgroundColor(0xFF616D78);
                         schedule.setLayoutParams(scheduleParams);
                         layout[i].addView(schedule);
 
@@ -547,17 +635,49 @@ public class FriendSchedule extends Activity {
                     int last = 21*60;
                     int dur = last-lasttime;
                     if(dur>0){
-                        float time = (float)dur / 30f;
-                        sum_time += time;
-                        Log.d("time", Float.toString(time));
-                        LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
-                        scheduleParams1.weight = time;
-                        ScheduleView schedule2 = new ScheduleView(FriendSchedule.this);
-                        schedule2.schedule_name.setText("");
-                        schedule2.schedule_info.setText("");
-                        schedule2.schedule_layout.setBackgroundColor(android.R.color.white);
-                        schedule2.setLayoutParams(scheduleParams1);
-                        layout[i].addView(schedule2);
+                        int first = lasttime;
+
+                        int startLine = first/60+1;
+                        int finishLine = (last-1)/60;
+                        if(startLine > finishLine){
+                            float time = (float)dur / 30f;
+                            sum_time += time;
+                            Log.d("time", Float.toString(time));
+                            LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
+                            scheduleParams1.weight = time;
+                            ViewSchedule schedule2 = new ViewSchedule(ActivityFriendSchedule.this);
+                            schedule2.schedule_name.setText("");
+                            schedule2.schedule_info.setText("");
+                            schedule2.schedule_layout.setBackgroundColor(0xFFFFFF);
+                            schedule2.setLayoutParams(scheduleParams1);
+                            layout[i].addView(schedule2);
+                        } else{
+                            float[] weightArray = new float[2 * finishLine - 2 * startLine + 3];
+                            float weightTmp = 60f * (float) startLine - (float) first;
+                            weightTmp = weightTmp / 30f;
+                            weightArray[0] = weightTmp;
+                            weightTmp = (float) last - (float) finishLine * 60f;
+                            weightTmp = weightTmp / 30f;
+                            weightArray[2 * finishLine - 2 * startLine + 2] = weightTmp - 0.02f;
+                            for (int tmp = 1; tmp < 2 * finishLine - 2 * startLine + 2; tmp++) {
+                                if (tmp % 2 == 1) weightArray[tmp] = 0.02f;
+                                else weightArray[tmp] = 1.98f;
+                            }
+                            for(int tmp = 0;tmp<weightArray.length;tmp++){
+                                sum_time += weightArray[tmp];
+                                Log.d("머지", Float.toString(weightArray[tmp]));
+                                sum_time += weightArray[tmp];
+                                LinearLayout.LayoutParams scheduleParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
+                                scheduleParams1.weight = weightArray[tmp];
+                                ViewSchedule schedule2 = new ViewSchedule(ActivityFriendSchedule.this);
+                                schedule2.schedule_name.setText("");
+                                schedule2.schedule_info.setText("");
+                                if(tmp%2==1) schedule2.schedule_layout.setBackgroundColor(0xFF888888);
+                                else schedule2.schedule_layout.setBackgroundColor(0xFFFFFF);
+                                schedule2.setLayoutParams(scheduleParams1);
+                                layout[i].addView(schedule2);
+                            }
+                        }
                     }
                     Log.d("sum of time "+i, Float.toString(sum_time));
                 }
@@ -575,28 +695,67 @@ public class FriendSchedule extends Activity {
         int finishTime;
         String name;
         String info;
+        int color;
 
         public timeTable(){
             startTime = 0;
             finishTime = 0;
             name = "";
+            info = "";
+            color = 0;
         }
 
-        public timeTable(int startTime, int finishTime, String name, String info){
+        public timeTable(int startTime, int finishTime, String name, String info, int color){
             this.startTime = startTime;
             this.finishTime = finishTime;
             this.name = name;
             this.info = info;
+            this.color = color;
         }
     }
     class AscendingObj implements Comparator<timeTable> {
         @Override
-        public int compare(FriendSchedule.timeTable o1, FriendSchedule.timeTable o2) {
+        public int compare(ActivityFriendSchedule.timeTable o1, ActivityFriendSchedule.timeTable o2) {
             int rst;
             if(o1.startTime == o2.startTime) rst = 0;
             else if(o1.startTime > o2.startTime) rst = 1;
             else rst = -1;
             return rst;
         }
+    }
+
+    public ViewSchedule vs(String name, String info, Float weight, int color){
+        LinearLayout.LayoutParams scheduleParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
+        scheduleParams.weight = weight;
+        ViewSchedule schedule = new ViewSchedule(ActivityFriendSchedule.this);
+        schedule.schedule_name.setText(name);
+        schedule.schedule_info.setText(info);
+
+        switch(color){
+            case 0:
+                schedule.schedule_layout.setBackgroundColor(0xFF3FB8AF);
+                break;
+            case 1:
+                schedule.schedule_layout.setBackgroundColor(0xFF7FC7AF);
+                break;
+            case 2:
+                schedule.schedule_layout.setBackgroundColor(0xFFDAD8A7);
+                break;
+            case 3:
+                schedule.schedule_layout.setBackgroundColor(0xFFFF9E9D);
+                break;
+            case 4:
+                schedule.schedule_layout.setBackgroundColor(0xFFC78989);
+                break;
+            case 5:
+                schedule.schedule_layout.setBackgroundColor(0xFFD6B8F3);
+                break;
+            default:
+                schedule.schedule_layout.setBackgroundColor(0xFF445878);
+                break;
+        }
+        schedule.setLayoutParams(scheduleParams);
+
+        return schedule;
     }
 }

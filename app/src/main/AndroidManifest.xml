@@ -15,10 +15,10 @@
         <activity android:name=".PopUpClipboard"
             android:theme="@android:style/Theme.Dialog"></activity>
         <activity
-            android:name=".DeleteFriend"
+            android:name=".PopUpDeleteFriend"
             android:theme="@android:style/Theme.Dialog" />
         <activity
-            android:name=".CancelFriendRequest"
+            android:name=".PopUpCancelFriendRequest"
             android:theme="@android:style/Theme.Dialog" />
         <activity
             android:name=".PopUpDelete"
@@ -30,18 +30,18 @@
             android:name=".PopUpDaySelect"
             android:theme="@android:style/Theme.Dialog" />
         <activity
-            android:name=".FriendSchedule"
+            android:name=".ActivityFriendSchedule"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".getRequest"
+            android:name=".PopUpGetRequest"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Dialog" />
         <activity
-            android:name=".AddFriend"
+            android:name=".ActivityAddFriend"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Dialog" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".ActivityLogin"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -50,14 +50,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".JoininActivity"
+            android:name=".ActivityJoinin"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Dialog" />
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".AddScheduleActivity"
+            android:name=".ActivityAddSchedule"
             android:screenOrientation="portrait" />
     </application>
 

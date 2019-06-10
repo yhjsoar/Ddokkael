@@ -65,36 +65,43 @@
             android:layout_height="match_parent"
             android:orientation="vertical"></LinearLayout>
         <LinearLayout
+            android:background="@drawable/tableedge"
             android:id="@+id/layout2"
             android:layout_width="56dp"
             android:layout_height="match_parent"
             android:orientation="vertical"></LinearLayout>
         <LinearLayout
+            android:background="@drawable/tableedge"
             android:id="@+id/layout3"
             android:layout_width="56dp"
             android:layout_height="match_parent"
             android:orientation="vertical"></LinearLayout>
         <LinearLayout
+            android:background="@drawable/tableedge"
             android:id="@+id/layout4"
             android:layout_width="56dp"
             android:layout_height="match_parent"
             android:orientation="vertical"></LinearLayout>
         <LinearLayout
+            android:background="@drawable/tableedge"
             android:id="@+id/layout5"
             android:layout_width="56dp"
             android:layout_height="match_parent"
             android:orientation="vertical"></LinearLayout>
         <LinearLayout
+            android:background="@drawable/tableedge"
             android:id="@+id/layout6"
             android:layout_width="56dp"
             android:layout_height="match_parent"
             android:orientation="vertical"></LinearLayout>
         <LinearLayout
+            android:background="@drawable/tableedge"
             android:id="@+id/layout7"
             android:layout_width="56dp"
             android:layout_height="match_parent"
             android:orientation="vertical"></LinearLayout>
         <LinearLayout
+            android:background="@drawable/tableedge"
             android:id="@+id/layout8"
             android:layout_width="56dp"
             android:layout_height="match_parent"

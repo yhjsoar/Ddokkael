@@ -1,15 +1,10 @@
 package com.example.myapplication;
 
-import android.app.AlarmManager;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -25,9 +20,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.Calendar;
-
-public class LoginActivity extends AppCompatActivity {
+public class ActivityLogin extends AppCompatActivity {
     Button login, joinin;
     EditText edit_ID, edit_PW;
     String id, pw;
@@ -45,7 +38,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        intent = new Intent(LoginActivity.this, MainActivity.class);
+        intent = new Intent(ActivityLogin.this, MainActivity.class);
         Intent intent2 = getIntent();
         String isLogout = "";
         if(intent2!=null) isLogout = intent2.getStringExtra("logout");
@@ -104,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
         joinin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                intent = new Intent(LoginActivity.this, JoininActivity.class);
+                intent = new Intent(ActivityLogin.this, ActivityJoinin.class);
                 // firebase에 유저 등록 후 MainActivity로 intent
                 intent.putExtra("data", "Test popup");
                 startActivityForResult(intent, 1);
@@ -119,14 +112,16 @@ public class LoginActivity extends AppCompatActivity {
                 //데이터 받기
                 int popup_add = data.getExtras().getInt("button");
                 if(popup_add == 1){
-                    Toast.makeText(LoginActivity.this, "회원가입에 성공했습니다.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ActivityLogin.this, "회원가입에 성공했습니다.", Toast.LENGTH_SHORT).show();
                     id = data.getExtras().getString("ID");
 
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    Intent intent = new Intent(ActivityLogin.this, MainActivity.class);
                     intent.putExtra("ID", id);
                     startActivity(intent);
+
+                    finish();
                 }else{
-                    Toast.makeText(LoginActivity.this, "회원가입를 취소했습니다.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ActivityLogin.this, "회원가입를 취소했습니다.", Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -138,7 +133,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 boolean isRight = false;
                 for(DataSnapshot postSnapshot : dataSnapshot.child(getString(R.string.id)).getChildren()){
-                    FirebaseID get = postSnapshot.getValue(FirebaseID.class);
+                    DataFirebaseID get = postSnapshot.getValue(DataFirebaseID.class);
                     if(get.id.equals(id) && get.pw.equals(pw)){
                         isRight = true;
                         break;
@@ -146,7 +141,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 if(isRight){
                     // 정상적으로 로그인 된 경우 MainActivity로 intent
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    Intent intent = new Intent(ActivityLogin.this, MainActivity.class);
                     if(loginCheck.isChecked()){
                         editor.putString("id", id);
                         editor.putString("pw", pw);
@@ -160,7 +155,7 @@ public class LoginActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 } else{
-                    Toast.makeText(LoginActivity.this, "로그인에 실패하셨습니다", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ActivityLogin.this, "로그인에 실패하셨습니다", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -170,25 +165,4 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-
-//    public class AlarmHATT {
-//        private Context context;
-//        public AlarmHATT(Context context) {
-//            this.context=context;
-//        }
-//        public void Alarm() {
-//            AlarmManager am = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-//            Intent intent = new Intent(LoginActivity.this, BroadcastD.class);
-//
-//            PendingIntent sender = PendingIntent.getBroadcast(LoginActivity.this, 0, intent, 0);
-//
-//            Calendar calendar = Calendar.getInstance();
-//            //알람시간 calendar에 set해주기
-//
-//            calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), 11, 29, 0);
-//
-//            //알람 예약
-//            am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), sender);
-//        }
-//    }
 }

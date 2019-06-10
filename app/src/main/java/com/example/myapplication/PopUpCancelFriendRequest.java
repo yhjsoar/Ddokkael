@@ -3,7 +3,6 @@ package com.example.myapplication;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,7 +17,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class CancelFriendRequest extends Activity {
+import org.w3c.dom.Text;
+
+public class PopUpCancelFriendRequest extends Activity {
     DatabaseReference databaseReference;
 
     String name; // 친구
@@ -40,6 +41,9 @@ public class CancelFriendRequest extends Activity {
         Intent intent = getIntent();
         name = intent.getStringExtra("name");
         myname = intent.getStringExtra("myname");
+
+        TextView textView = (TextView)findViewById(R.id.cancelname);
+        textView.setText(name);
 
         yes.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,20 +81,20 @@ public class CancelFriendRequest extends Activity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot post : dataSnapshot.child("request_list").child(myname).child("to").getChildren()){
-                    FirebaseFriend get = post.getValue(FirebaseFriend.class);
+                    DataFirebaseFriend get = post.getValue(DataFirebaseFriend.class);
                     if(get.name.equals(name)){
                         post.getRef().removeValue();
                         break;
                     }
                 }
                 for(DataSnapshot post : dataSnapshot.child("request_list").child(name).child("from").getChildren()){
-                    FirebaseFriend get = post.getValue(FirebaseFriend.class);
+                    DataFirebaseFriend get = post.getValue(DataFirebaseFriend.class);
                     if(get.name.equals(myname)){
                         post.getRef().removeValue();
                         break;
                     }
                 }
-                Toast.makeText(CancelFriendRequest.this, "요청을 취소하였습니다.", Toast.LENGTH_SHORT);
+                Toast.makeText(PopUpCancelFriendRequest.this, "요청을 취소하였습니다.", Toast.LENGTH_SHORT);
                 finish();
             }
 

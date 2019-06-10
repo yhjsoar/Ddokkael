@@ -3,13 +3,13 @@ package com.example.myapplication;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FirebaseFriend {
+public class DataFirebaseFriend {
     String name;
 
-    public FirebaseFriend(){
+    public DataFirebaseFriend(){
 
     }
-    public FirebaseFriend(String name){
+    public DataFirebaseFriend(String name){
         this.name = name;
     }
 

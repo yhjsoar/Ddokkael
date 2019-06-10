@@ -16,7 +16,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class DeleteFriend extends Activity {
+public class PopUpDeleteFriend extends Activity {
     DatabaseReference databaseReference;
 
     String name; // 친구
@@ -38,6 +38,9 @@ public class DeleteFriend extends Activity {
         Intent intent = getIntent();
         name = intent.getStringExtra("name");
         myname = intent.getStringExtra("myname");
+
+        TextView textView = (TextView)findViewById(R.id.deletename);
+        textView.setText(name);
 
         yes.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,14 +78,14 @@ public class DeleteFriend extends Activity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot post : dataSnapshot.child(getString(R.string.person)).child(myname).child(getString(R.string.friend)).getChildren()){
-                    FirebaseFriend get = post.getValue(FirebaseFriend.class);
+                    DataFirebaseFriend get = post.getValue(DataFirebaseFriend.class);
                     if(get.name.equals(name)){
                         post.getRef().removeValue();
                         break;
                     }
                 }
                 for(DataSnapshot post : dataSnapshot.child(getString(R.string.person)).child(name).child(getString(R.string.friend)).getChildren()){
-                    FirebaseFriend get = post.getValue(FirebaseFriend.class);
+                    DataFirebaseFriend get = post.getValue(DataFirebaseFriend.class);
                     if(get.name.equals(myname)){
                         post.getRef().removeValue();
                         break;

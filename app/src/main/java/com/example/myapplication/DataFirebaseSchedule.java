@@ -3,7 +3,7 @@ package com.example.myapplication;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FirebaseSchedule {
+public class DataFirebaseSchedule {
     public String schedule;
     public String info;
     public int start_time;
@@ -11,11 +11,12 @@ public class FirebaseSchedule {
     public int fin_time;
     public int fin_min;
     public int isOpen;
+    public int color;
 
-    public FirebaseSchedule(){
+    public DataFirebaseSchedule(){
 
     }
-    public FirebaseSchedule(String schedule, String info, int startTime, int startMin, int finTime, int finMin, int isOpen){
+    public DataFirebaseSchedule(String schedule, String info, int startTime, int startMin, int finTime, int finMin, int isOpen, int color){
         this.schedule = schedule;
         this.fin_min = finMin;
         this.fin_time = finTime;
@@ -23,6 +24,7 @@ public class FirebaseSchedule {
         this.start_time = startTime;
         this.info = info;
         this.isOpen = isOpen;
+        this.color = color;
     }
 
     public Map<String, Object> toMap(){
@@ -34,6 +36,7 @@ public class FirebaseSchedule {
         result.put("fin_time", fin_time);
         result.put("fin_min", fin_min);
         result.put("isOpen", isOpen);
+        result.put("color", color);
         return  result;
     }
 }

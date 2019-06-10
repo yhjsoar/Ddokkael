@@ -3,7 +3,6 @@ package com.example.myapplication;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,12 +17,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
-
 import java.util.HashMap;
 import java.util.Map;
 
-public class getRequest extends Activity {
+public class PopUpGetRequest extends Activity {
     private DatabaseReference mPostReference;
 
     Button btn, btn2;
@@ -36,18 +33,18 @@ public class getRequest extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_get_request);
+        setContentView(R.layout.popup_get_request);
 
         btn = (Button)findViewById(R.id.btn);
         btn2 = (Button)findViewById(R.id.plusfriend);
-        textView = (TextView)findViewById(R.id.text3);
+        textView = (TextView)findViewById(R.id.requestfriend);
 
         mPostReference = FirebaseDatabase.getInstance().getReference();
 
         Intent intent = getIntent();
         name = intent.getStringExtra("name");
         friend = intent.getStringExtra("friend");
-        textView.setText(friend);
+        textView.setText(friend+"의 친구요청");
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,15 +81,15 @@ public class getRequest extends Activity {
         Map<String, Object> postValues = null;
         Map<String, Object> postValues2 = null;
         if(add){
-            FirebaseFriend me = new FirebaseFriend(friend);
-            FirebaseFriend fr = new FirebaseFriend(name);
+            DataFirebaseFriend me = new DataFirebaseFriend(friend);
+            DataFirebaseFriend fr = new DataFirebaseFriend(name);
             postValues = me.toMap();
             postValues2 = fr.toMap();
         }
         childUpdates.put("/list/"+getString(R.string.person)+"/"+friend+"/"+getString(R.string.friend)+"/"+name, postValues2);
         childUpdates.put("/list/"+getString(R.string.person)+"/"+name+"/"+getString(R.string.friend)+"/"+friend, postValues);
         mPostReference.updateChildren(childUpdates);
-        Toast.makeText(getRequest.this, "친구 요청을 수락하였습니다.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(PopUpGetRequest.this, "친구 요청을 수락하였습니다.", Toast.LENGTH_SHORT).show();
     }
 
     public void check(){
@@ -100,14 +97,14 @@ public class getRequest extends Activity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot postSnapshot : dataSnapshot.child(getString(R.string.request)).child(name).child("from").getChildren()){
-                    FirebaseFriend get = postSnapshot.getValue(FirebaseFriend.class);
+                    DataFirebaseFriend get = postSnapshot.getValue(DataFirebaseFriend.class);
                     if(get.name.equals(friend)){
                         postSnapshot.getRef().removeValue();
                         break;
                     }
                 }
                 for(DataSnapshot postSnapshot : dataSnapshot.child(getString(R.string.request)).child(friend).child("to").getChildren()){
-                    FirebaseFriend get = postSnapshot.getValue(FirebaseFriend.class);
+                    DataFirebaseFriend get = postSnapshot.getValue(DataFirebaseFriend.class);
                     if(get.name.equals(name)){
                         postSnapshot.getRef().removeValue();
                         break;
