@@ -106,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 pager.setCurrentItem(0);
-                Toast.makeText(MainActivity.this,"calendar", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -114,7 +113,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 pager.setCurrentItem(1);
-                Toast.makeText(MainActivity.this,"timetable", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -122,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 pager.setCurrentItem(2);
-                Toast.makeText(MainActivity.this,"friends", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -134,7 +131,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, 1);
             }
         });
-
     }
 
     @Override

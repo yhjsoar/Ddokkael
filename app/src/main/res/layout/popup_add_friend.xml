@@ -43,7 +43,7 @@
             android:layout_height="50dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:hint="아이디를 입력해주세요"/>
+            android:hint="아이디"/>
         <Button
             android:id="@+id/findFriendBtn"
             android:layout_width="50dp"

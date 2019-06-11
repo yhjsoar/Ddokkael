@@ -229,8 +229,7 @@ public class ActivityAddSchedule extends Activity {
             else childUpdates.put("/list/Person_List/"+name+"/schedule_date/"+day_list[nowDay]+"/"+dt+"/"+addingSchedule.schedule, postValues);
         }
         mPostReference.updateChildren(childUpdates);
-        Toast.makeText(ActivityAddSchedule.this, addingSchedule.schedule, Toast.LENGTH_SHORT).show();
-
+        Toast.makeText(ActivityAddSchedule.this, "일정이 추가되었습니다.", Toast.LENGTH_SHORT).show();
         activity_end(true);
     }
 
